@@ -3,7 +3,6 @@ import React, {
 } from 'react';
 import HealthBars from './HealthBars'
 import "../App.css"
-import Player from "../classes/Player";
 import CharacterStats from './CharacterUI/CharacterStats';
 import RollMenu from './CharacterUI/RollMenu';
 import imgLocation from '../graphics/Location.svg';
@@ -13,8 +12,7 @@ import imgManOn from '../graphics/Man_on.svg';
 
 const App = () => {
 
-  const p = [new Player(1, "Tisciit"), new Player(17, "Phalandra")]
-  const [players, setPlayers] = useState(p);
+  const [players, setPlayers] = useState([]);
 
   const bars = players.map(elt => {
     return {
@@ -61,7 +59,7 @@ const App = () => {
       <HealthBars Bars={bars}> </HealthBars>
       <RollMenu options={roll01} onChange={(e) => {console.log(e)}}></RollMenu>
       <button onClick={dmgHl}>Damage or Heal anyone</button>
-      <CharacterStats player={players[0]}></CharacterStats> 
+      {players.length > 0 ? <CharacterStats player={players[0]}></CharacterStats> : "" } 
     </div>
   );
 }

@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import Entity from "../../classes/Entity";
-
 const CharacterStats = (props) => {
 
     const {name} = props.player;
