@@ -12,15 +12,23 @@ import imgManOn from '../graphics/Man_on.svg';
 
 
 const webSocket = new WebSocket(`ws://192.168.0.87:8080`);
-webSocket.onopen = () => {
-  webSocket.send("Hallo!")
-}
 
 const App = () => {
 
   webSocket.onmessage = (message) => {
-    const received = message.data;
-    setPlayers(JSON.parse(received));
+    const {dataType, data} = JSON.parse(message.data);
+
+    console.log(`Received ${dataType}`);
+    
+    switch (dataType) {
+      case "Players":
+        setPlayers(data);
+        break;
+
+      default:
+        console.log(`Can´t handle ${message.data.dataType} - ${message.data.data}`);
+        break;
+    }
   }
 
   const [players, setPlayers] = useState([]);
