@@ -10,16 +10,27 @@ import imgLocationOn from '../graphics/Location_on.svg';
 import imgMan from '../graphics/Man.svg';
 import imgManOn from '../graphics/Man_on.svg';
 
+
+const webSocket = new WebSocket(`ws://192.168.0.87:8080`);
+webSocket.onopen = () => {
+  webSocket.send("Hallo!")
+}
+
 const App = () => {
+
+  webSocket.onmessage = (message) => {
+    const received = message.data;
+    setPlayers(JSON.parse(received));
+  }
 
   const [players, setPlayers] = useState([]);
 
   const bars = players.map(elt => {
     return {
-    "name": elt.name,
-    "hptotal": elt.Stats.HP.total,
-    "hpcurrent": elt.Stats.HP.current,
-    "level": elt.Stats.LVL
+      "name": elt.name,
+      "hptotal": elt.Stats.HP.total,
+      "hpcurrent": elt.Stats.HP.current,
+      "level": elt.Stats.LVL
     }
   });
 
@@ -57,9 +68,9 @@ const App = () => {
   return (
     <div className="App" >
       <HealthBars Bars={bars}> </HealthBars>
-      <RollMenu options={roll01} onChange={(e) => {console.log(e)}}></RollMenu>
+      <RollMenu options={roll01} onChange={(e) => { console.log(e) }}></RollMenu>
       <button onClick={dmgHl}>Damage or Heal anyone</button>
-      {players.length > 0 ? <CharacterStats player={players[0]}></CharacterStats> : "" } 
+      {players.length > 0 ? <CharacterStats player={players[0]}></CharacterStats> : ""}
     </div>
   );
 }
