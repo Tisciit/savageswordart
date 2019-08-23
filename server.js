@@ -3,7 +3,6 @@ const express = require('express');
 const http = require("http");
 const webSocket = require("ws");
 
-const Player = require("./saorpg/Player");
 const Enums = require("./EnumExport");
 
 const app = express();
@@ -13,18 +12,7 @@ const wss = new webSocket.Server({
 });
 
 //--- Game Objects ---
-const path = "./userData/game.json"
-const Game = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path)) : {
-  effects: [],
-  skills: [],
-  perks: [],
-  players: [],
-  monsters: [],
-  quests: []
-}
-
-//Game.players[0].manipulateHealth(-1);
-//--------------------
+const Game = require("./initialize")();
 
 app.get("/websocket", (req, res) => {
 
@@ -53,11 +41,32 @@ app.get("/api/save", (req, res) => {
   res.send("Success!");
 });
 
+app.get("/api/players", (req, res) => {
+  res.json(Game.players);
+})
+
 app.get("/api/hp/:name/:value", (req, res) => {
+  console.log("hello :)");
   const p = Game.players.find(pl => pl.name === req.params.name);
-  console.log(p);
   if (p) {
     p.manipulateHealth(req.params.value);
+    res.send("Updated Players Health");
+  } else {
+    res.send("Could not find player :(");
+  }
+  wss.clients.forEach(function each(client) {
+    client.send(JSON.stringify({
+      dataType: "Players",
+      data: Game.players
+    }));
+  });
+});
+
+app.get("/api/en/:name/:value", (req, res) => {
+  const p = Game.players.find(pl => pl.name === req.params.name);
+  if (p) {
+    p.manipulateEN(req.params.value);
+    res.send("Updated Players EN")
   }
   res.send("Could not find player :(");
 });

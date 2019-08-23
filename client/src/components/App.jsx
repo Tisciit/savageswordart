@@ -15,10 +15,10 @@ const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").re
 const App = () => {
 
   webSocket.onmessage = (message) => {
-    const {dataType, data} = JSON.parse(message.data);
+    const { dataType, data } = JSON.parse(message.data);
 
     console.log(`Received ${dataType}`);
-    
+
     switch (dataType) {
       case "Players":
         setPlayers(data);
@@ -42,11 +42,15 @@ const App = () => {
   });
 
   const dmgHl = () => {
-    const pl = [...players];
-    const random = Math.floor(Math.random() * pl.length);
-    const dmg = Math.floor(Math.random() * 200);
-    pl[random].dealDamage(dmg);
-    setPlayers(pl);
+    const random = Math.floor(Math.random() * players.length);
+    let dmg = Math.floor(Math.random() * 200);
+
+    dmg *= Math.random() > .3 ? 1 : -1;
+
+    const name = players[random].name;
+
+    console.log(`/api/hp/${name}/${dmg}`);
+    fetch(`/api/hp/${name}/${dmg}`);
   }
 
   const roll01 = [

@@ -6,8 +6,9 @@ class Player extends Entity {
         //Construct Entity object
         super(lvl, name);
         this.type = Entity.TYPES.Player;
-        this.updateStats();
+        this.updateBase();
         this.updateTotals();
+        this.refresh();
     }
 }
 

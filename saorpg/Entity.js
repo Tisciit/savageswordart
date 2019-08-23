@@ -45,7 +45,7 @@ class Entity {
 
         let current = this.Stats[Entity.STATENUM.HP].current;
         let total = this.Stats[Entity.STATENUM.HP].total;
-        
+
         current += amount;
 
         current = current > total ? total : current;
@@ -53,6 +53,28 @@ class Entity {
 
         this.Stats[Entity.STATENUM.HP].current = current;
         this.checkAlive();
+    }
+
+    manipulateEN(amount) {
+        amount = parseInt(amount);
+
+        let current = this.Stats[Entity.STATENUM.EN].current;
+        let total = this.Stats[Entity.STATENUM.EN].total;
+
+        current += amount;
+
+        //EN only needs overflow "protection";
+        current = current > total ? total : current;
+    }
+
+    refresh(){
+        for (let stat of Object.getOwnPropertyNames(this.Stats)) {
+            const ownProperties = Object.getOwnPropertyNames(this.Stats[stat]);
+            if (ownProperties.indexOf("current") !== -1) {
+                const s = this.Stats[stat];
+                s.current = s.total;
+            }
+        }
     }
 
     equipItem(Item, Slot) {
@@ -79,13 +101,10 @@ class Entity {
         this.updateTotals();
     }
 
-    updateStats() {
-        for (let stat of Object.getOwnPropertyNames(this.Stats)) {
-            const ownProperties = Object.getOwnPropertyNames(this.Stats[stat]);
-            if (ownProperties.indexOf("_formula") !== -1) {
-                this.Stats[stat]._formula(this.Stats);
-            }
-        }
+    updateBase() {
+        this.Stats[Entity.STATENUM.HP].base = 250 + (70 * (this.Stats[Entity.STATENUM.LVL] - 1));
+        this.Stats[Entity.STATENUM.EN].base = 7 + this.Stats[Entity.STATENUM.LVL];
+        this.Stats[Entity.STATENUM.CARRY].base = 100 + (5 * this.Stats[Entity.STATENUM.STR].total);
     }
 
     updateTotals() {
@@ -99,6 +118,8 @@ class Entity {
     }
 }
 
+
+//#region Class Enums and set up stuff
 Entity.TYPES = {
     "Player": 1,
     "NPC": 2,
@@ -130,58 +151,40 @@ Entity.STATENUM = {
     EN: "EN",
     CARRY: "CARRY"
 }
-
-const UPDATETOTAL = function () {
-    this.total = this.base + this.modifiers.reduce((sum, modifier) => sum += modifier.value, 0);
-}
 Entity.STATS = {}
 Entity.STATS[Entity.STATENUM.HP] = {
-    _formula: function(Stats){
-        this.base = 250 + (70 * (Stats[Entity.STATENUM.LVL] - 1));
-    },
-    _updateTotal: UPDATETOTAL,
     base: 0,
     modifiers: [],
     total: 0,
     current: 0
 };
 Entity.STATS[Entity.STATENUM.EN] = {
-    _formula: function (Stats) {
-        this.base = 7 + Stats[Entity.STATENUM.LVL];
-    },
-    _updateTotal: UPDATETOTAL,
     base: 0,
     modifiers: [],
     total: 0,
     current: 0
 };
 Entity.STATS[Entity.STATENUM.CARRY] = {
-    _formula: function (Stats) {
-        this.base = 100 + (5 * Stats[Entity.STATENUM.STR].total);
-    },
-    _updateTotal: UPDATETOTAL,
     base: 0,
     modifiers: [],
     total: 0,
 };
 Entity.STATS[Entity.STATENUM.LVL] = 0;
 Entity.STATS[Entity.STATENUM.STR] = {
-    _updateTotal: UPDATETOTAL,
     base: 1,
     modifiers: [],
     total: 0,
 }
 Entity.STATS[Entity.STATENUM.AGI] = {
-    _updateTotal: UPDATETOTAL,
     base: 1,
     modifiers: [],
     total: 0,
 }
 Entity.STATS[Entity.STATENUM.EVA] = {
-    _updateTotal: UPDATETOTAL,
     base: 1,
     modifiers: [],
     total: 0,
 }
+//#endregion
 
 module.exports = Entity;
