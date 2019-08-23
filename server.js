@@ -1,31 +1,16 @@
-const express = require('express');
 const fs = require("fs");
-const WebSocket = require("ws");
-
-const wss = new WebSocket.Server({
-  port: 8080
-});
-
-wss.on("connection", function connection(ws) {
-  console.log("Client connected :))");
-  ws.on("message", function incoming(message) {
-    console.log("received: %s", message);
-  });
-
-  const data = Game.players.length == 0 ? [] : Game.players
-
-  ws.send(JSON.stringify({
-    dataType: "Players",
-    data: data
-  }));
-});
+const express = require('express');
+const http = require("http");
+const webSocket = require("ws");
 
 const Player = require("./saorpg/Player");
 const Enums = require("./EnumExport");
 
 const app = express();
-
-
+const server = http.createServer(app);
+const wss = new webSocket.Server({
+  server
+});
 
 //--- Game Objects ---
 const path = "./userData/game.json"
@@ -37,12 +22,12 @@ const Game = fs.existsSync(path) ? JSON.parse(fs.readFileSync(path)) : {
   monsters: [],
   quests: []
 }
+
+//Game.players[0].manipulateHealth(-1);
 //--------------------
 
-app.post("/api/readFromFile", (req, res) => {
-  res.send("it works!");
+app.get("/websocket", (req, res) => {
 
-  //TODO
 });
 
 app.get('/api/enums', (req, res) => {
@@ -68,6 +53,29 @@ app.get("/api/save", (req, res) => {
   res.send("Success!");
 });
 
-const port = 5000;
+app.get("/api/hp/:name/:value", (req, res) => {
+  const p = Game.players.find(pl => pl.name === req.params.name);
+  console.log(p);
+  if (p) {
+    p.manipulateHealth(req.params.value);
+  }
+  res.send("Could not find player :(");
+});
 
-app.listen(port, () => `Server running on port ${port}`);
+wss.on("connection", function connection(ws) {
+  console.log("Client connected :))");
+  ws.on("message", function incoming(message) {
+    console.log("received: %s", message);
+  });
+
+  const data = Game.players.length == 0 ? [] : Game.players
+
+  ws.send(JSON.stringify({
+    dataType: "Players",
+    data: data
+  }));
+});
+
+const port = process.env.PORT || 5000;
+
+server.listen(port, () => console.log(`Server running on port ${server.address().port}`));

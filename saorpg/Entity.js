@@ -39,19 +39,20 @@ class Entity {
         }
     }
 
-    dealDamage(amount) {
-        let hp = this.Stats[Entity.STATENUM.HP].current;
-        if (hp - amount < 0) {
-            hp = 0;
-        } else {
-            hp -= amount;
-        }
-        this.Stats[Entity.STATENUM.HP].current = hp;
-        this.checkAlive();
-    }
+    manipulateHealth(amount) {
 
-    calculateDamageTaken(damageDealt) {
-        return damageDealt;
+        amount = parseInt(amount);
+
+        let current = this.Stats[Entity.STATENUM.HP].current;
+        let total = this.Stats[Entity.STATENUM.HP].total;
+        
+        current += amount;
+
+        current = current > total ? total : current;
+        current = current <= 0 ? 0 : current;
+
+        this.Stats[Entity.STATENUM.HP].current = current;
+        this.checkAlive();
     }
 
     equipItem(Item, Slot) {
@@ -90,23 +91,11 @@ class Entity {
     updateTotals() {
         for (let stat of Object.getOwnPropertyNames(this.Stats)) {
             const ownProperties = Object.getOwnPropertyNames(this.Stats[stat]);
-            if (ownProperties.indexOf("_updateTotal") !== -1) {
-                this.Stats[stat]._updateTotal(this.Stats);
+            if (ownProperties.indexOf("modifiers") !== -1) {
+                const s = this.Stats[stat];
+                s.total = s.base + s.modifiers.reduce((sum, modifier) => sum += modifier.value, 0);
             }
         }
-    }
-
-    heal(amount) {
-        let current = this.Stats[Entity.STATENUM.HP].current;
-        let total = this.Stats[Entity.STATENUM.HP].total;
-
-        if (!amount) {
-            current = total;
-        } else {
-            current = current + amount > total ? total : current + amount;
-        }
-
-        this.Stats[Entity.STATENUM.HP].current = current;
     }
 }
 

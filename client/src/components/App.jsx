@@ -10,8 +10,7 @@ import imgLocationOn from '../graphics/Location_on.svg';
 import imgMan from '../graphics/Man.svg';
 import imgManOn from '../graphics/Man_on.svg';
 
-
-const webSocket = new WebSocket(`ws://192.168.0.87:8080`);
+const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").replace(":3000", ":5000")}`);
 
 const App = () => {
 

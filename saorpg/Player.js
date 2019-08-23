@@ -8,7 +8,6 @@ class Player extends Entity {
         this.type = Entity.TYPES.Player;
         this.updateStats();
         this.updateTotals();
-        this.heal();
     }
 }
 
