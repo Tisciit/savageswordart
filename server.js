@@ -14,15 +14,34 @@ const wss = new webSocket.Server({
 //--- Game Objects ---
 const Game = require("./initialize")();
 
-app.get("/websocket", (req, res) => {
 
-});
-
+//#region --- GET Requests ---
 app.get('/api/enums', (req, res) => {
   res.json(Enums);
 });
 
-app.get("/api/createPlayer/:name", (req, res) => {
+app.get("/api/get/:object", (req, res) => {
+
+  const obj = req.params.object;
+
+  if (obj.toLowerCase() === "game") {
+    res.json(Game);
+  } else {
+    const gameobj = Game[obj];
+    console.log(gameobj);
+    if (gameobj === undefined) {
+      res.status(500).send(`Can not find object ${obj}`);
+    } else {
+      res.json(gameobj);
+    }
+  }
+});
+
+//#endregion
+
+//#region POST Requests
+
+app.post("/api/createPlayer/:name", (req, res) => {
   const player = new Player(1, req.params.name);
   Game.players.push(player);
   res.json(player);
@@ -40,10 +59,6 @@ app.get("/api/save", (req, res) => {
   fs.writeFileSync(path, JSON.stringify(Game));
   res.send("Success!");
 });
-
-app.get("/api/players", (req, res) => {
-  res.json(Game.players);
-})
 
 app.get("/api/hp/:name/:value", (req, res) => {
   console.log("hello :)");
