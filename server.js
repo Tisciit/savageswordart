@@ -73,8 +73,8 @@ app.post("/api/save", (req, res) => {
 
 app.post("/api/hp", (req, res) => {
 
-  const player = req.body.player;
-  const value = req.body.value;
+  const { player, value } = req.body;
+  console.log(player, value);
 
   const p = Game.players.find(pl => pl.name === player);
   if (p) {
@@ -86,7 +86,7 @@ app.post("/api/hp", (req, res) => {
   sendToClients("players");
 });
 
-app.post("/api/en/:name/:value", (req, res) => {
+app.post("/api/en", (req, res) => {
 
   const { player, value } = req.body;
 

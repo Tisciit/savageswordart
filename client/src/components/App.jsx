@@ -54,8 +54,16 @@ const App = () => {
 
     const name = players[random].name;
 
-    console.log(`/api/hp/${name}/${dmg}`);
-    fetch(`/api/hp/${name}/${dmg}`);
+    console.log(`/api/hp`);
+    fetch(`/api/hp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        player: name, value: dmg
+      })
+    });
   }
 
   const roll01 = [
