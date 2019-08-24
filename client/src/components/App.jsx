@@ -22,7 +22,7 @@ const App = () => {
 
   return(
     <div className="App">
-      <Welcome></Welcome>
+      <Welcome commit={(type) => {console.log(type)}}></Welcome>
 
     </div>
   )

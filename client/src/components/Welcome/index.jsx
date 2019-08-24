@@ -25,12 +25,12 @@ const Screen = styled.div`
 
 const Selection = (props) => {
 
-    const {options} = props;
+    const { commit, options } = props;
 
     return (
         <Screen>
             <h1>Who are you?</h1>
-            {options.map(elt => <button>{elt}</button>)}
+            {options.map((elt, id) => <button key={id} onClick={commit({ type: "Player", id: { id } })}>{elt}</button>)}
         </Screen>
     );
 }
@@ -38,19 +38,20 @@ const Selection = (props) => {
 const Welcome = (props) => {
 
     const [type, setType] = useState("");
-    const [chosenPlayer, setChosenPlayer] = useState(0);
 
-    const options = props.options || ["Hallo","das","ist","ein","Test"]
+    const { commit } = props;
+    const options = props.options || ["Hallo", "das", "ist", "ein", "Test"]
 
     return (
         <React.Fragment>
-            {type === "Player" && chosenPlayer === 0 ?
-                <Selection options={options}>Hello</Selection> :
+            {type === "Player" ?
+                <Selection commit={commit} options={options}>Hello</Selection> :
                 <Screen className="Test">
                     <h1>Welcome to SaveageSAO, {type}</h1>
                     <div className="horiz">
                         <button onClick={() => {
                             setType("GM");
+                            commit("GM");
                         }}>I am the GM</button>
                         <button onClick={() => {
                             setType("Player");
