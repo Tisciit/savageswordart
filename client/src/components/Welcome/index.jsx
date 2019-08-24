@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
 const Screen = styled.div`
@@ -14,8 +14,8 @@ const Screen = styled.div`
 
     button {
         margin: 1em;
-        height: 10rem;
-        width: 10rem;
+        height: 8rem;
+        width: 8rem;
         border-radius: 10px;
         border: none;
         background: black;
@@ -23,24 +23,41 @@ const Screen = styled.div`
     }
 `;
 
-const Selection = () => {
-    
-}
+const Selection = (props) => {
 
-const Welcome = () => {
+    const {options} = props;
 
     return (
-        <Screen className="Test">
-            <h1>Welcome to SaveageSAO</h1>
-            <div className="horiz">
-                <button onClick={() => {
-                    //setState GM
-                }}>I am the GM</button>
-                <button onClick={() => {
-                    //setState Player ?
-                }}>I am a Player</button>
-            </div>
+        <Screen>
+            <h1>Who are you?</h1>
+            {options.map(elt => <button>{elt}</button>)}
         </Screen>
+    );
+}
+
+const Welcome = (props) => {
+
+    const [type, setType] = useState("");
+    const [chosenPlayer, setChosenPlayer] = useState(0);
+
+    const options = props.options || ["Hallo","das","ist","ein","Test"]
+
+    return (
+        <React.Fragment>
+            {type === "Player" && chosenPlayer === 0 ?
+                <Selection options={options}>Hello</Selection> :
+                <Screen className="Test">
+                    <h1>Welcome to SaveageSAO, {type}</h1>
+                    <div className="horiz">
+                        <button onClick={() => {
+                            setType("GM");
+                        }}>I am the GM</button>
+                        <button onClick={() => {
+                            setType("Player");
+                        }}>I am a Player</button>
+                    </div>
+                </Screen>}
+        </React.Fragment>
     )
 }
 
