@@ -20,7 +20,7 @@ function init() {
     };
 
     if (!fs.existsSync(path)) {
-        return;
+        return Game;
     }
 
     const obj = JSON.parse(fs.readFileSync(path));
