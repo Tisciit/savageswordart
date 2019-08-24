@@ -40,7 +40,7 @@ const Welcome = (props) => {
     const [type, setType] = useState("");
 
     const { commit } = props;
-    const options = props.options || ["Hallo", "das", "ist", "ein", "Test"]
+    const options = props.options || ["Hallo", "das", "ist", "ein", "Test"];
 
     return (
         <React.Fragment>
