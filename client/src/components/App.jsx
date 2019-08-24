@@ -18,14 +18,19 @@ const App = () => {
     const { dataType, data } = JSON.parse(message.data);
 
     console.log(`Received ${dataType}`);
+    console.log(data)
 
     switch (dataType) {
-      case "Players":
+      case "players":
         setPlayers(data);
         break;
 
+      case "game":
+        setPlayers(data.players);
+        break;
+
       default:
-        console.log(`Can´t handle ${message.data.dataType} - ${message.data.data}`);
+        console.log(`Can´t handle ${dataType} - ${data}`);
         break;
     }
   }

@@ -1,11 +1,17 @@
 const fs = require("fs");
 const express = require('express');
+const bodyParser = require("body-parser");
 const http = require("http");
 const webSocket = require("ws");
 
 const Enums = require("./EnumExport");
 
 const app = express();
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
+app.use(bodyParser.json());
+
 const server = http.createServer(app);
 const wss = new webSocket.Server({
   server
@@ -39,52 +45,62 @@ app.get("/api/get/:object", (req, res) => {
 
 //#endregion
 
-//#region POST Requests
+//#region --- POST Requests ---
 
-app.post("/api/createPlayer/:name", (req, res) => {
-  const player = new Player(1, req.params.name);
+app.post("/api/createPlayer", (req, res) => {
+
+  console.log(req);
+
+  const level = req.body.level || 1;
+  const name = req.body.name;
+
+  if (!name) {
+    res.status(500).send("A name has to be provided");
+    return;
+  }
+  const Player = require("./saorpg/Player");
+  const player = new Player(level, name);
   Game.players.push(player);
   res.json(player);
-  wss.clients.forEach(function each(client) {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({
-        dataType: "Players",
-        data: Game.players
-      }));
-    }
-  });
+  sendToClients("players");
 });
 
-app.get("/api/save", (req, res) => {
+app.post("/api/save", (req, res) => {
+  const path = "./userData/game.json";
   fs.writeFileSync(path, JSON.stringify(Game));
   res.send("Success!");
 });
 
-app.get("/api/hp/:name/:value", (req, res) => {
-  console.log("hello :)");
-  const p = Game.players.find(pl => pl.name === req.params.name);
+app.post("/api/hp", (req, res) => {
+
+  const player = req.body.player;
+  const value = req.body.value;
+
+  const p = Game.players.find(pl => pl.name === player);
   if (p) {
-    p.manipulateHealth(req.params.value);
+    p.manipulateHealth(value);
     res.send("Updated Players Health");
   } else {
     res.send("Could not find player :(");
   }
-  wss.clients.forEach(function each(client) {
-    client.send(JSON.stringify({
-      dataType: "Players",
-      data: Game.players
-    }));
-  });
+  sendToClients("players");
 });
 
-app.get("/api/en/:name/:value", (req, res) => {
-  const p = Game.players.find(pl => pl.name === req.params.name);
+app.post("/api/en/:name/:value", (req, res) => {
+
+  const { player, value } = req.body;
+
+  const p = Game.players.find(pl => pl.name === player);
   if (p) {
-    p.manipulateEN(req.params.value);
-    res.send("Updated Players EN")
+    p.manipulateEN(value);
+    res.status(500).send("Updated Players EN")
   }
   res.send("Could not find player :(");
 });
+
+//#endregion
+
+//#region --- WSS ----
 
 wss.on("connection", function connection(ws) {
   console.log("Client connected :))");
@@ -92,13 +108,38 @@ wss.on("connection", function connection(ws) {
     console.log("received: %s", message);
   });
 
-  const data = Game.players.length == 0 ? [] : Game.players
-
   ws.send(JSON.stringify({
-    dataType: "Players",
-    data: data
+    dataType: "game",
+    data: Game
   }));
 });
+
+function sendToClients(type) {
+
+  let data = {};
+  type = type.toLowerCase();
+
+  if (type === "game") {
+    data = Game;
+  } else {
+    data = Game[type];
+
+    if (data === undefined) {
+      console.log(`Can not send ${type}`);
+      return;
+    }
+  }
+
+  console.log("Sending each!")
+  wss.clients.forEach(l => {
+    l.send(JSON.stringify({
+      dataType: type,
+      data: data
+    }))
+  });
+}
+
+//#endregion
 
 const port = process.env.PORT || 5000;
 
