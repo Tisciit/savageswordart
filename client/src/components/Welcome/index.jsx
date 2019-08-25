@@ -31,7 +31,7 @@ const Screen = styled.div`
 const Selection = (props) => {
 
     const { commit } = props;
-    const options = useSelector((state) => state.players);
+    const options = useSelector((state) => state.game.players);
 
     return (
         <Screen>

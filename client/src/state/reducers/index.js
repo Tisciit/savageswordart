@@ -1,35 +1,22 @@
-import {UPDATEPLAYERS, UPDATEPLAYER} from "../actions";
+import {
+    combineReducers
+} from "redux";
+import Game from "./game";
 
-
-const defaultVal = {
-    players: []
-}
-
-const rootReducer = (state = defaultVal, action) => {
-    switch (action.type) {
-
-        case UPDATEPLAYER: {
-            const copy = [...state];
-            const player = copy.players.find((pl) => pl.name == action.payload.name);
-            Object.assign(player, action.payload);
-            return copy;
-        }
-
-        case UPDATEPLAYERS: {
-            const copy = [...state];
-            copy.players = action.payload;
-            return copy;
-        }
-
-        default:
-            return state;
-    }
-}
+const rootReducer = combineReducers({
+    game: Game
+});
 
 export default rootReducer;
 
+
+/* Thoughts on state
+ * Application needs to know of GM or Player is "logged in"
+ * Application needs to know which component to render
+ * Application needs "Game" objects, GM needs more than the player, which "only" needs the player component
+ */
 const state = {
-    type: "GM / Player",
+    type: "Unknown / GM / Player",
     render: "Welcome / UI / Battle / ...",
     Game: {
         players: [],
