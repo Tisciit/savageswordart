@@ -16,7 +16,6 @@ const yellow = "linear-gradient(120deg, rgba(223,156,91,1) 0%, rgba(239,232,20,1
 const green = "linear-gradient(120deg, rgba(80,194,108,1) 0%, rgba(60,240,105,1) 100%)"
 
 
-//#region Styled Components
 const Wrapper = styled.div`
     position: relative;
     display: grid;
