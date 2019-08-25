@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import Healthbar from "./HealthBar";
 import { userTypes } from "../../state/actions/userType";
 import styled from "styled-components";
+import CreatePlayer from "../Utilities/createPlayer";
 
 const Main = () => {
 
@@ -26,17 +27,31 @@ const Main = () => {
         }
     }
 
+    const renderGM = () => {
+        if (isGM) {
+            return (
+                <React.Fragment>
+                    <CreatePlayer />
+                </React.Fragment>
+            )
+        }
+    }
+
     return (
         <Screen>
             <div>
                 {renderSelf()}
-                {party.map(elt => <Healthbar
+                {party.map((elt, index) => <Healthbar
+                    key={index}
                     name={elt.name}
                     hpcurrent={elt.Stats.HP.current}
                     hptotal={elt.Stats.HP.total}
                     level={elt.Stats.LVL}
                     showInfo={isGM ? "1" : "0"} />
                 )}
+            </div>
+            <div>
+                {renderGM()}
             </div>
         </Screen>
     )
