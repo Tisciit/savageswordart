@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import {useSelector} from "react-redux";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { userTypes, setUserPlayer, setUserGM,  setUserUndefined, setUserIS } from "../../state/actions/userType";
 import styled from "styled-components";
 
 
@@ -29,14 +30,16 @@ const Screen = styled.div`
 //#endregion
 
 const Selection = (props) => {
-
-    const { commit } = props;
     const options = useSelector((state) => state.game.players);
+
+    const dispatch = useDispatch();
 
     return (
         <Screen>
             <h1>Who are you?</h1>
-            {options.map((elt, id) => <button key={id} onClick={commit({ type: "Player", id: { id } })}>{elt.name}</button>)}
+            {options.map((elt, id) => <button key={id} onClick={() => {
+                dispatch(setUserIS(elt));
+            }}>{elt.name}</button>)}
             {props.children}
         </Screen>
     );
@@ -44,26 +47,26 @@ const Selection = (props) => {
 
 const Welcome = (props) => {
 
-    const [type, setType] = useState("");
-
-    const { commit } = props;
+    const dispatch = useDispatch();
+    const USER_TYPE = useSelector(state => state.userType);
 
     return (
         <React.Fragment>
-            {type === "Player" ?
-                <Selection commit={commit}> <button onClick={() => {setType("");}}>Back</button></Selection> :
-                <Screen className="Test">
-                    <h1>Welcome to SaveageSAO, {type}</h1>
+            {USER_TYPE.type === userTypes.Undefined ?
+                <Screen>
+                    <h1>Welcome to SaveageSwordArt!</h1>
                     <div className="horiz">
                         <button onClick={() => {
-                            setType("GM");
-                            commit("GM");
+                            dispatch(setUserGM());
+                            dispatch(setUserIS(null));
                         }}>I am the GM</button>
                         <button onClick={() => {
-                            setType("Player");
+                            dispatch(setUserPlayer())
                         }}>I am a Player</button>
                     </div>
-                </Screen>}
+                </Screen> : ""}
+            {USER_TYPE.type === userTypes.Player ?
+                <Selection> <button onClick={() => { dispatch(setUserUndefined()); }}>Back</button></Selection> : ""}
         </React.Fragment>
     )
 }

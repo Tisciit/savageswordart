@@ -2,9 +2,11 @@ import {
     combineReducers
 } from "redux";
 import Game from "./game";
+import userType from "./userType";
 
 const rootReducer = combineReducers({
-    game: Game
+    game: Game,
+    userType: userType
 });
 
 export default rootReducer;
