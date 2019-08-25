@@ -19,8 +19,8 @@ const green = "linear-gradient(120deg, rgba(80,194,108,1) 0%, rgba(60,240,105,1)
 const Wrapper = styled.div`
     position: relative;
     display: grid;
-    width: 20rem;
-    max-width: 80%;
+    width: 25rem;
+    max-width: 100%;
     padding: .2em;
     background: linear-gradient(180deg, rgba(221,214,214,1) 0%, rgba(221,214,214,1) 65%, rgba(221,214,214,0) 65%);
 

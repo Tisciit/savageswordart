@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import Healthbar from "./HealthBar";
 import { userTypes } from "../../state/actions/userType";
+import styled from "styled-components";
 
 const Main = () => {
 
@@ -26,17 +27,25 @@ const Main = () => {
     }
 
     return (
-        <React.Fragment>
-            {renderSelf()}
-            {party.map(elt => <Healthbar
-                name={elt.name}
-                hpcurrent={elt.Stats.HP.current}
-                hptotal={elt.Stats.HP.total}
-                level={elt.Stats.LVL}
-                showInfo={isGM ? "1" : "0"} />
-            )}
-        </React.Fragment>
+        <Screen>
+            <div>
+                {renderSelf()}
+                {party.map(elt => <Healthbar
+                    name={elt.name}
+                    hpcurrent={elt.Stats.HP.current}
+                    hptotal={elt.Stats.HP.total}
+                    level={elt.Stats.LVL}
+                    showInfo={isGM ? "1" : "0"} />
+                )}
+            </div>
+        </Screen>
     )
 }
+
+const Screen = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+`;
 
 export default Main;
