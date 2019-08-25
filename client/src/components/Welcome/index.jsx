@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { userTypes, setUserPlayer, setUserGM,  setUserUndefined, setUserIS } from "../../state/actions/userType";
 import styled from "styled-components";
+import { changerender } from "../../state/actions/render";
 
 
 //#region --- styled components
@@ -39,6 +40,7 @@ const Selection = (props) => {
             <h1>Who are you?</h1>
             {options.map((elt, id) => <button key={id} onClick={() => {
                 dispatch(setUserIS(elt));
+                dispatch(changerender("main"));
             }}>{elt.name}</button>)}
             {props.children}
         </Screen>
@@ -59,6 +61,7 @@ const Welcome = (props) => {
                         <button onClick={() => {
                             dispatch(setUserGM());
                             dispatch(setUserIS(null));
+                            dispatch(changerender("main"));
                         }}>I am the GM</button>
                         <button onClick={() => {
                             dispatch(setUserPlayer())

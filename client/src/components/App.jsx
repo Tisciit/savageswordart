@@ -22,7 +22,8 @@ const App = () => {
 
   return (
     <div className="App">
-      <Welcome commit={(type) => { console.log(type) }}></Welcome>
+      {render === "welcome" ? <Welcome commit={(type) => { console.log(type) }}></Welcome> : ""}
+      {render === "main" ? <h1>Hi boi</h1> : ""}
 
     </div>
   )
