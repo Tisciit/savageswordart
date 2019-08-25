@@ -1,6 +1,9 @@
 import React, { useState } from "react";
+import {useSelector} from "react-redux";
 import styled from "styled-components";
 
+
+//#region --- styled components
 const Screen = styled.div`
     position: absolute;
     top: 0;
@@ -23,14 +26,18 @@ const Screen = styled.div`
     }
 `;
 
+//#endregion
+
 const Selection = (props) => {
 
-    const { commit, options } = props;
+    const { commit } = props;
+    const options = useSelector((state) => state.players);
 
     return (
         <Screen>
             <h1>Who are you?</h1>
-            {options.map((elt, id) => <button key={id} onClick={commit({ type: "Player", id: { id } })}>{elt}</button>)}
+            {options.map((elt, id) => <button key={id} onClick={commit({ type: "Player", id: { id } })}>{elt.name}</button>)}
+            {props.children}
         </Screen>
     );
 }
@@ -40,12 +47,11 @@ const Welcome = (props) => {
     const [type, setType] = useState("");
 
     const { commit } = props;
-    const options = props.options || ["Hallo", "das", "ist", "ein", "Test"];
 
     return (
         <React.Fragment>
             {type === "Player" ?
-                <Selection commit={commit} options={options}>Hello</Selection> :
+                <Selection commit={commit}> <button onClick={() => {setType("");}}>Back</button></Selection> :
                 <Screen className="Test">
                     <h1>Welcome to SaveageSAO, {type}</h1>
                     <div className="horiz">

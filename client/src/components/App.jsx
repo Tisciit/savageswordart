@@ -1,20 +1,17 @@
+import "../App.css"
+
 import React, {
   useState
 } from 'react';
 import Welcome from "./Welcome";
+
 import HealthBars from './HealthBars'
-import "../App.css"
 import CharacterStats from './CharacterUI/CharacterStats';
 import RollMenu from './CharacterUI/RollMenu';
 import imgLocation from '../graphics/Location.svg';
 import imgLocationOn from '../graphics/Location_on.svg';
 import imgMan from '../graphics/Man.svg';
 import imgManOn from '../graphics/Man_on.svg';
-
-
-//WebSocket needs to be moved somewhere else :(
-const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").replace(":3000", ":5000")}`);
-
 
 const App = () => {
 
