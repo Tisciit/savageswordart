@@ -1,4 +1,4 @@
-import {UPDATEPLAYERS, UPDATEPLAYER} from "../actions";
+import {UPDATEPLAYERS, UPDATEPLAYER} from "../actions/game";
 
 
 const defaultVal = {

@@ -1,7 +1,7 @@
 import store from "./state/store";
 import {
     updatePlayers
-} from "./state/actions";
+} from "./state/actions/game";
 
 //WebSocket needs to be moved somewhere else :(
 const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").replace(":3000", ":5000")}`);

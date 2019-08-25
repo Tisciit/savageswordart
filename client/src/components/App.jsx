@@ -3,7 +3,10 @@ import "../App.css"
 import React, {
   useState
 } from 'react';
+import { useSelector } from "react-redux";
+
 import Welcome from "./Welcome";
+
 
 import HealthBars from './HealthBars'
 import CharacterStats from './CharacterUI/CharacterStats';
@@ -15,11 +18,11 @@ import imgManOn from '../graphics/Man_on.svg';
 
 const App = () => {
 
-  const [runas, setRunas] = useState(null);
+  const render = useSelector(store => store.render);
 
-  return(
+  return (
     <div className="App">
-      <Welcome commit={(type) => {console.log(type)}}></Welcome>
+      <Welcome commit={(type) => { console.log(type) }}></Welcome>
 
     </div>
   )
