@@ -15,7 +15,7 @@ const userType = (state = defaultState, action) => {
             const copy = Object.assign({}, state);
             copy.type = action.payload;
             return copy;
-        };
+        }
 
         case SETUSERIS: {
             const copy = Object.assign({}, state);

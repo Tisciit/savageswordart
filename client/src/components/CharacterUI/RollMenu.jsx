@@ -83,7 +83,7 @@ const RollMenu = (props) => {
                     <MenuPoint
                         key={option.id}
                         id={option.id}
-                        img={activeID == option.id ? option.imgActive : option.imgInactive}
+                        img={activeID === option.id ? option.imgActive : option.imgInactive}
                         onClick={handleChange}
                     ></MenuPoint>
                 )}
