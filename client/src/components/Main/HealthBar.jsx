@@ -19,7 +19,8 @@ const green = "linear-gradient(120deg, rgba(80,194,108,1) 0%, rgba(60,240,105,1)
 const Wrapper = styled.div`
     position: relative;
     display: grid;
-    width: 25rem;;
+    width: 20rem;
+    max-width: 80%;
     padding: .2em;
     background: linear-gradient(180deg, rgba(221,214,214,1) 0%, rgba(221,214,214,1) 65%, rgba(221,214,214,0) 65%);
 
@@ -168,10 +169,22 @@ const LVLInfo = styled.div`
 
 const Healthbar = (props) => {
 
-    const { name, hpcurrent, hptotal, level } = props;
+    const { name, hpcurrent, hptotal, level, showInfo } = props;
 
     const percentage = hpcurrent / hptotal * 100;
     const barColor = percentage < 30 ? red : percentage < 50 ? yellow : green;
+
+    const withInfo = () => {
+        console.log(showInfo);
+        if (showInfo === "1") {
+            return (
+                <InfoContainer>
+                    <HPInfo>{hpcurrent} / {hptotal}</HPInfo>
+                    <LVLInfo>LV: {level}</LVLInfo>
+                </InfoContainer>
+            )
+        }
+    }
     return (
         <Wrapper>
             <Grid>
@@ -181,10 +194,7 @@ const Healthbar = (props) => {
                     <HealBar style={{ width: percentage + "%" }} />
                     <HPBar style={{ width: percentage + "%", background: barColor }} />
                 </Bars>
-                <InfoContainer>
-                    <HPInfo>{hpcurrent} / {hptotal}</HPInfo>
-                    <LVLInfo>LV: {level}</LVLInfo>
-                </InfoContainer>
+                {withInfo()}
             </Grid>
         </Wrapper>
     )
