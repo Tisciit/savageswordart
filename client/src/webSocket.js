@@ -1,5 +1,6 @@
 import store from "./state/store";
 import {
+    updatePlayer,
     updatePlayers,
     updateSelf
 } from "./state/actions/game";
@@ -19,25 +20,30 @@ export const connect = () => {
         switch (data.type) {
 
             case "connection": {
-                console.log(data.data);
-                uid = data.data;
+                console.log(data.payload);
+                uid = data.payload;
                 break;
             }
 
             case "game": {
-                store.dispatch(updatePlayers(data.data.players));
+                store.dispatch(updatePlayers(data.payload.players));
                 break;
             }
 
             case "playerSelection": {
-                store.dispatch(updatePlayers(data.data));
+                store.dispatch(updatePlayers(data.payload));
                 break;
             }
 
-            case "subscription": {
-                store.dispatch(updateSelf(data.data));
+            case "self": {
+                store.dispatch(updateSelf(data.payload));
                 store.dispatch(changerender("main"));
                 break;
+            }
+
+            //GM  "exclusive - populate players with way more info"
+            case "gm": {
+                store.dispatch(updatePlayer(data.payload));
             }
 
             default: {
@@ -48,12 +54,19 @@ export const connect = () => {
     }
 }
 
-export const subscribeToPlayer = (id) => {
+export const impersonatePlayer = (id) => {
     webSocket.send(JSON.stringify({
         uid,
         action: "subscribe",
-        subscribe: id
+        id: id
     }));
+}
+
+export const impersonateGM = () => {
+    webSocket.send(JSON.stringify({
+        uid,
+        action: "gm",
+    }))
 }
 
 export default connect;

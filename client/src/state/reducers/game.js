@@ -11,7 +11,7 @@ const Game = (state = defaultVal, action) => {
 
         case UPDATEPLAYER: {
             const copy = [...state];
-            const player = copy.players.find((pl) => pl.name === action.payload.name);
+            const player = copy.players.find((pl) => pl.id === action.payload.id);
             Object.assign(player, action.payload);
             return copy;
         }

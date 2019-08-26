@@ -2,9 +2,8 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { userTypes, setUserPlayer, setUserGM, setUserUndefined, setUserIS } from "../../state/actions/userType";
 import styled from "styled-components";
-import { changerender } from "../../state/actions/render";
 
-import { subscribeToPlayer } from "../../webSocket";
+import { impersonatePlayer, impersonateGM } from "../../webSocket";
 
 
 //#region --- styled components
@@ -35,13 +34,11 @@ const Screen = styled.div`
 const Selection = (props) => {
     const options = useSelector((state) => state.game.players);
 
-    const dispatch = useDispatch();
-
     return (
         <Screen>
             <h1>Who are you?</h1>
             {options.map((elt, id) => <button key={id} onClick={() => {
-                subscribeToPlayer(elt.id);
+                impersonatePlayer(elt.id);
             }}>{elt.name}</button>)}
             {props.children}
         </Screen>
@@ -60,9 +57,7 @@ const Welcome = (props) => {
                     <h1>Welcome to SaveageSwordArt!</h1>
                     <div className="horiz">
                         <button onClick={() => {
-                            dispatch(setUserGM());
-                            dispatch(setUserIS(null));
-                            dispatch(changerender("main"));
+                            impersonateGM()
                         }}>I am the GM</button>
                         <button onClick={() => {
                             dispatch(setUserPlayer())

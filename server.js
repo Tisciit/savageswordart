@@ -104,38 +104,79 @@ app.post("/api/en", (req, res) => {
 
 //#region --- WSS ----
 
-const PLAYERSUBSCRIPTION = {};
+const CLIENTS = {};
+const wsMessageTypes = {
+  connection: "connection",
+  self: "self",
+  gm: "gm",
+  playerSelection: "playerSelection"
+}
 
 wss.on("connection", function connection(ws) {
   console.log("Client connected, generating ID");
 
-  //TODO: Make better!
+  //#region --- Assign ID to client
   const id = Math.random() * 1000;
 
-  ws.send(JSON.stringify({
-    type: "connection",
-    data: id,
-  }));
+  console.log(`Assigned ID ${id} to new Client`)
+  CLIENTS[id] = {
+    connected: Date.now(),
+    socket: ws
+  }
 
+  ws.send(JSON.stringify({
+    type: wsMessageTypes.connection,
+    payload: id,
+  }));
+  //#endregion
+
+  //#region --- Handle messages from client
   ws.on("message", function incoming(message) {
     const request = JSON.parse(message);
+    const id = request.uid;
+
+    //Vars which get sent back to the client
+    let type, payload;
+
+    console.log(request.action);
+
     switch (request.action) {
-      case "subscribe":
-        const id = request.uid;
-        const player = Game.players.find(elt => elt.id === request.subscribe);
-        PLAYERSUBSCRIPTION[id] = {
-          ws,
-          id: player.id
-        };
-        console.log(`${id} subscribed to ${player.id}`);
-        WSSupdatePlayer(player.id);
+      case "player": {
+        const player = Game.players.find(elt => elt.id === request.id);
+        Object.assign(CLIENTS[id], {
+          type: "player",
+          self: player.id
+        });
+        type = wsMessageTypes.self;
+        payload = player;
+        console.log(`${id} impersonated to ${player.id}`);
         break;
+      }
+
+      case "gm": {
+        Object.assign(CLIENTS[id], {
+          type: "gm"
+        });
+        type = wsMessageTypes.gm;
+        payload = Game.players;
+        break;
+      }
 
       default:
-        break;
+        type = "unknown";
+        payload = null;
+          break;
     }
-  });
 
+    //Send client data
+    ws.send(JSON.stringify({
+      type,
+      payload
+    }));
+  });
+  //#endregion
+
+  //#region --- Initialy send Player names and ids
   const playerSelection = [];
   Game.players.forEach(elt => playerSelection.push({
     id: elt.id,
@@ -143,22 +184,25 @@ wss.on("connection", function connection(ws) {
   }));
 
   ws.send(JSON.stringify({
-    type: "playerSelection",
-    data: playerSelection
+    type: wsMessageTypes.playerSelection,
+    payload: playerSelection
   }));
+  //#endregion
 });
 
+
+//Websocket function which sends updates of a specific player to the corresponding clients
 function WSSupdatePlayer(playerID) {
-  //Get all connections for player object
-  // const connectionsToSend = WSSCONNECTIONS.filter(connection => connection.player === id);
+  // Get all connections for player object
 
   const player = Game.players.find(elt => elt.id === playerID);
 
-  for (let prop of Object.getOwnPropertyNames(PLAYERSUBSCRIPTION)) {
-    if (playerID == PLAYERSUBSCRIPTION[prop].id) {
-      PLAYERSUBSCRIPTION[prop].ws.send(JSON.stringify({
-        type: "subscription",
-        data: player
+  for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
+    const client = CLIENTS[prop];
+    if (playerID == client.self || client.type == "gm") {
+      client.ws.send(JSON.stringify({
+        type: wsMessageTypes.self,
+        payload: player
       }));
     }
   }
