@@ -37,13 +37,12 @@ export const connect = () => {
 
             case "self": {
                 store.dispatch(updateSelf(data.payload));
-                store.dispatch(changerender("main"));
                 break;
             }
 
             //GM  "exclusive - populate players with way more info"
             case "gm": {
-                store.dispatch(updatePlayer(data.payload));
+                store.dispatch(updatePlayers(data.payload));
             }
 
             default: {
@@ -57,7 +56,7 @@ export const connect = () => {
 export const impersonatePlayer = (id) => {
     webSocket.send(JSON.stringify({
         uid,
-        action: "subscribe",
+        action: "player",
         id: id
     }));
 }
