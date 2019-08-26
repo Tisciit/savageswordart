@@ -1,8 +1,10 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { userTypes, setUserPlayer, setUserGM,  setUserUndefined, setUserIS } from "../../state/actions/userType";
+import { userTypes, setUserPlayer, setUserGM, setUserUndefined, setUserIS } from "../../state/actions/userType";
 import styled from "styled-components";
 import { changerender } from "../../state/actions/render";
+
+import { subscribeToPlayer } from "../../webSocket";
 
 
 //#region --- styled components
@@ -39,8 +41,7 @@ const Selection = (props) => {
         <Screen>
             <h1>Who are you?</h1>
             {options.map((elt, id) => <button key={id} onClick={() => {
-                dispatch(setUserIS(elt));
-                dispatch(changerender("main"));
+                subscribeToPlayer(elt.id);
             }}>{elt.name}</button>)}
             {props.children}
         </Screen>

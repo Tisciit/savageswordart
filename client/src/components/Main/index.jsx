@@ -1,57 +1,29 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import Healthbar from "./HealthBar";
-import { userTypes } from "../../state/actions/userType";
 import styled from "styled-components";
-import CreatePlayer from "../Utilities/createPlayer";
 
 const Main = () => {
 
-    const isGM = useSelector(state => state.userType.type) === userTypes.GM;
+    const self = useSelector(state => state.game.self);
+    const party = self.party || [];
 
-    const ownName = isGM ? "" : useSelector(state => state.userType.is.name);
-    const players = useSelector(state => state.game.players);
-    const self = players.find(elt => elt.name === ownName);
-    const party = players.filter(elt => elt.name !== ownName);
-
-    const renderSelf = () => {
-        if (!isGM) {
-            return (
+    return (
+        <Screen>
+            <div>
                 <Healthbar
                     name={self.name}
                     hpcurrent={self.Stats.HP.current}
                     hptotal={self.Stats.HP.total}
                     level={self.Stats.LVL}
-                    showInfo="1"></Healthbar>
-            );
-        }
-    }
-
-    const renderGM = () => {
-        if (isGM) {
-            return (
-                <React.Fragment>
-                    <CreatePlayer />
-                </React.Fragment>
-            )
-        }
-    }
-
-    return (
-        <Screen>
-            <div>
-                {renderSelf()}
+                    showInfo="1" />
                 {party.map((elt, index) => <Healthbar
                     key={index}
                     name={elt.name}
-                    hpcurrent={elt.Stats.HP.current}
-                    hptotal={elt.Stats.HP.total}
-                    level={elt.Stats.LVL}
-                    showInfo={isGM ? "1" : "0"} />
+                    hpcurrent={elt.percentage}
+                    hptotal="100"
+                    showInfo="0" />
                 )}
-            </div>
-            <div>
-                {renderGM()}
             </div>
         </Screen>
     )

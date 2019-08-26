@@ -2,6 +2,7 @@ class Entity {
 
     constructor(lvl, name) {
 
+        this.id = Entity.nextId++;
         this.name = name;
         this.isAlive = true;
         this.type = "";
@@ -117,6 +118,8 @@ class Entity {
         }
     }
 }
+
+Entity.nextId = 1;
 
 
 //#region Class Enums and set up stuff

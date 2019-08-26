@@ -34,7 +34,6 @@ app.get("/api/get/:object", (req, res) => {
     res.json(Game);
   } else {
     const gameobj = Game[obj];
-    console.log(gameobj);
     if (gameobj === undefined) {
       res.status(500).send(`Can not find object ${obj}`);
     } else {
@@ -48,8 +47,6 @@ app.get("/api/get/:object", (req, res) => {
 //#region --- POST Requests ---
 
 app.post("/api/createPlayer", (req, res) => {
-
-  console.log(req);
 
   const level = req.body.level || 1;
   const name = req.body.name;
@@ -73,8 +70,10 @@ app.post("/api/save", (req, res) => {
 
 app.post("/api/hp", (req, res) => {
 
-  const { player, value } = req.body;
-  console.log(player, value);
+  const {
+    player,
+    value
+  } = req.body;
 
   const p = Game.players.find(pl => pl.name === player);
   if (p) {
@@ -88,7 +87,10 @@ app.post("/api/hp", (req, res) => {
 
 app.post("/api/en", (req, res) => {
 
-  const { player, value } = req.body;
+  const {
+    player,
+    value
+  } = req.body;
 
   const p = Game.players.find(pl => pl.name === player);
   if (p) {
@@ -102,17 +104,65 @@ app.post("/api/en", (req, res) => {
 
 //#region --- WSS ----
 
+const PLAYERSUBSCRIPTION = {};
+
 wss.on("connection", function connection(ws) {
-  console.log("Client connected :))");
-  ws.on("message", function incoming(message) {
-    console.log("received: %s", message);
-  });
+  console.log("Client connected, generating ID");
+
+  //TODO: Make better!
+  const id = Math.random() * 1000;
 
   ws.send(JSON.stringify({
-    dataType: "game",
-    data: Game
+    type: "connection",
+    data: id,
+  }));
+
+  ws.on("message", function incoming(message) {
+    const request = JSON.parse(message);
+    switch (request.action) {
+      case "subscribe":
+        const id = request.uid;
+        const player = Game.players.find(elt => elt.id === request.subscribe);
+        PLAYERSUBSCRIPTION[id] = {
+          ws,
+          id: player.id
+        };
+        console.log(`${id} subscribed to ${player.id}`);
+        WSSupdatePlayer(player.id);
+        break;
+
+      default:
+        break;
+    }
+  });
+
+  const playerSelection = [];
+  Game.players.forEach(elt => playerSelection.push({
+    id: elt.id,
+    name: elt.name
+  }));
+
+  ws.send(JSON.stringify({
+    type: "playerSelection",
+    data: playerSelection
   }));
 });
+
+function WSSupdatePlayer(playerID) {
+  //Get all connections for player object
+  // const connectionsToSend = WSSCONNECTIONS.filter(connection => connection.player === id);
+
+  const player = Game.players.find(elt => elt.id === playerID);
+
+  for (let prop of Object.getOwnPropertyNames(PLAYERSUBSCRIPTION)) {
+    if (playerID == PLAYERSUBSCRIPTION[prop].id) {
+      PLAYERSUBSCRIPTION[prop].ws.send(JSON.stringify({
+        type: "subscription",
+        data: player
+      }));
+    }
+  }
+}
 
 function sendToClients(type) {
 
@@ -129,8 +179,6 @@ function sendToClients(type) {
       return;
     }
   }
-
-  console.log("Sending each!")
   wss.clients.forEach(l => {
     l.send(JSON.stringify({
       dataType: type,
