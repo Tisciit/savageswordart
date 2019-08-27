@@ -68,7 +68,7 @@ class Entity {
         current = current > total ? total : current;
     }
 
-    refresh(){
+    refresh() {
         for (let stat of Object.getOwnPropertyNames(this.Stats)) {
             const ownProperties = Object.getOwnPropertyNames(this.Stats[stat]);
             if (ownProperties.indexOf("current") !== -1) {

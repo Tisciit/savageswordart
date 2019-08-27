@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import Healthbar from "./HealthBar";
 import styled from "styled-components";
+import CreatePlayer from "../Utilities/CreatePlayer";
 
 const Main = () => {
 
@@ -25,6 +26,7 @@ const Main = () => {
                     showInfo="0" />
                 )}
             </div>
+            <CreatePlayer></CreatePlayer>
         </Screen>
     )
 }

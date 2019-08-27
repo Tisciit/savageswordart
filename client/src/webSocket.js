@@ -14,7 +14,7 @@ const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").re
 let uid = "";
 
 export const connect = () => {
-    webSocket.onmessage = (message) => {
+    webSocket.addEventListener("message", (message) => {
         const data = JSON.parse(message.data);
         console.log(`Received ${data.type}`);
         switch (data.type) {
@@ -50,7 +50,7 @@ export const connect = () => {
             }
 
         }
-    }
+    });
 }
 
 export const impersonatePlayer = (id) => {
@@ -60,6 +60,38 @@ export const impersonatePlayer = (id) => {
         id: id
     }));
 }
+
+export const impersonatePlayerAsync = (id) => {
+    return new Promise((resolve, reject) => {
+        webSocket.send(JSON.stringify({
+            uid,
+            action: "player",
+            id: id
+        }));
+
+        //Self deleting event listener
+        const listener = (message) => {
+            const data = JSON.parse(message.data);
+            if (data.type === "self") {
+                store.dispatch(updateSelf(data.payload));
+                webSocket.removeEventListener("message", listener);
+                clearInterval(timeOut);
+                resolve("self");
+            }
+        }
+
+        webSocket.addEventListener("message", listener);
+
+        //timeout after 2s
+        const timeOut = setInterval(() => {
+            console.log("reject");
+            webSocket.removeEventListener("message", listener);
+            reject("timeout");
+        }, 2000);
+
+        
+    })
+};
 
 export const impersonateGM = () => {
     webSocket.send(JSON.stringify({

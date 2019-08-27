@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Container from "./Container";
 
-const createPlayer = () => {
+const CreatePlayer = () => {
 
     const [name, setName] = useState("");
     const [level, setLevel] = useState(1);
@@ -32,4 +32,4 @@ const createPlayer = () => {
     )
 }
 
-export default createPlayer;
+export default CreatePlayer;

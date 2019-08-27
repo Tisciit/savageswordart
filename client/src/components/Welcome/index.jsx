@@ -3,45 +3,23 @@ import { useSelector, useDispatch } from "react-redux";
 import { userTypes, setUserPlayer, setUserGM, setUserUndefined, setUserIS } from "../../state/actions/userType";
 import styled from "styled-components";
 
-import { impersonatePlayer, impersonateGM } from "../../webSocket";
-
-
-//#region --- styled components
-const Screen = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-
-    button {
-        margin: 1em;
-        height: 8rem;
-        width: 8rem;
-        border-radius: 10px;
-        border: none;
-        background: black;
-        color: white;
-    }
-`;
-
-//#endregion
+import { impersonatePlayerAsync, impersonateGM } from "../../webSocket";
+import { changerender } from "../../state/actions/render";
 
 const Selection = (props) => {
     const options = useSelector((state) => state.game.players);
-
+    const dispatch = useDispatch();
     return (
         <Screen>
             <h1>Who are you?</h1>
             {options.map((elt, id) => <button key={id} onClick={() => {
-                impersonatePlayer(elt.id);
-            }}>{elt.name}</button>)}
+                impersonatePlayerAsync(elt.id).then(
+                    resolve => dispatch(changerender("main"))
+                );
+            }}>{elt.name}</button>)
+            }
             {props.children}
-        </Screen>
+        </Screen >
     );
 }
 
@@ -69,5 +47,31 @@ const Welcome = (props) => {
         </React.Fragment>
     )
 }
+
+//#region --- styled components
+const Screen = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+
+    button {
+        margin: 1em;
+        height: 8rem;
+        width: 8rem;
+        border-radius: 10px;
+        border: none;
+        background: black;
+        color: white;
+    }
+`;
+
+//#endregion
+
 
 export default Welcome;
