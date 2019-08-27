@@ -1,7 +1,8 @@
 import store from "./state/store";
 import {
     updatePlayers,
-    updateSelf
+    updateSelf,
+    updateParties
 } from "./state/actions/game";
 
 //WebSocket needs to be moved somewhere else :(
@@ -21,20 +22,20 @@ export const connect = () => {
                 break;
             }
 
-            case "playerSelection": {
-                store.dispatch(updatePlayers(data.payload));
-                break;
-            }
-
             case "self": {
                 store.dispatch(updateSelf(data.payload));
                 break;
             }
 
-            //GM  "exclusive - populate players with way more info"
             case "players": {
                 store.dispatch(updatePlayers(data.payload));
                 break;
+            }
+            
+            case "game": {
+                const {players, parties} = data.payload;
+                store.dispatch(updatePlayers(players));
+                store.dispatch(updateParties(parties));
             }
 
             default: {

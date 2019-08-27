@@ -175,7 +175,6 @@ const Healthbar = (props) => {
     const barColor = percentage < 30 ? red : percentage < 50 ? yellow : green;
 
     const withInfo = () => {
-        console.log(showInfo);
         if (showInfo === "1") {
             return (
                 <InfoContainer>

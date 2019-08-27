@@ -1,9 +1,10 @@
-import {UPDATEPLAYERS, UPDATEPLAYER, UPDATESELF} from "../actions/game";
+import {UPDATEPLAYERS, UPDATEPLAYER, UPDATESELF, UPDATEPARTIES} from "../actions/game";
 
 
 const defaultVal = {
     self: {},
-    players: []
+    players: [],
+    parties: []
 }
 
 const Game = (state = defaultVal, action) => {
@@ -25,6 +26,12 @@ const Game = (state = defaultVal, action) => {
         case UPDATESELF: {
             const copy = Object.assign({}, state);
             copy.self = action.payload;
+            return copy;
+        }
+
+        case UPDATEPARTIES: {
+            const copy = Object.assign({}, state);
+            copy.parties = action.payload;
             return copy;
         }
 

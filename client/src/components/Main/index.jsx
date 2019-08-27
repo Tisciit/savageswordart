@@ -5,13 +5,14 @@ import styled from "styled-components";
 import CreatePlayer from "../Utilities/CreatePlayer";
 import AllPlayers from "../Utilities/AllPlayers";
 import DamagePlayer from "../Utilities/DamagePlayer";
+import Party from "../Utilities/Party";
 
 const Main = () => {
 
     const type = useSelector(state => state.userType.type);
 
     const self = useSelector(state => state.game.self);
-    const party = self.party || [];
+    const party = self.partyData || [];
 
     return (
         <Screen>
@@ -21,21 +22,22 @@ const Main = () => {
                     hpcurrent={self.Stats.HP.current}
                     hptotal={self.Stats.HP.total}
                     level={self.Stats.LVL}
-                    showInfo="1" /> : null}
-                {party.map((elt, index) => <Healthbar
-                        key={index}
+                    showInfo="1" />
+                {party.map(elt => <Healthbar
+                        key={elt.id}
                         name={elt.name}
                         hpcurrent={elt.percentage}
                         hptotal="100"
                         showInfo="0" />
                     )}
             </div>
-            { type === 1 &&
-            <div>
-                <CreatePlayer></CreatePlayer>
-                <AllPlayers></AllPlayers>
-                <DamagePlayer></DamagePlayer>
-            </div>
+            {type === 1 &&
+                <div>
+                    <CreatePlayer></CreatePlayer>
+                    <AllPlayers></AllPlayers>
+                    <DamagePlayer></DamagePlayer>
+                    <Party></Party>
+                </div>
             }
         </Screen>
     )

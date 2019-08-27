@@ -105,6 +105,31 @@ app.post("/api/createPlayer", (req, res) => {
   WSSUpdatePlayers();
 });
 
+app.post("/api/createParty", (req, res) => {
+  const Party = require("./saorpg/Party");
+  const {
+    players
+  } = req.body;
+
+  //TAKE CARE NOT TO UPDATE THE PLAYERS SEND FROM THE CLIENT BUT THE CLIENTS ON THE SERVER!
+  const _players = [];
+  for (let p of players) {
+    _players.push(Game.players.find(elt => elt.id === p.id));
+  }
+
+  const party = new Party(_players);
+  Game.parties.push(party);
+  console.log(party);
+
+  for (let player of party.players) {
+    WSSupdatePlayer(player.id);
+  }
+
+  WSSUpdateGameElement();
+
+  res.send("Party created");
+});
+
 app.post("/api/save", (req, res) => {
   const path = "./userData/game.json";
   fs.writeFileSync(path, JSON.stringify(Game));
@@ -155,7 +180,8 @@ const CLIENTS = {};
 const wsMessageTypes = {
   connection: "connection",
   self: "self",
-  players: "players"
+  players: "players",
+  game: "game"
 }
 
 wss.on("connection", function connection(ws) {
@@ -205,6 +231,8 @@ function WSSupdatePlayer(playerID) {
 
   const player = Game.players.find(elt => elt.id === playerID);
 
+  console.log(player);
+
   for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
     const client = CLIENTS[prop];
     if (playerID == client.self || client.type == "gm") {
@@ -228,6 +256,17 @@ function WSSUpdatePlayers() {
       type: wsMessageTypes.players,
       payload: CLIENTS[prop].type == "gm" ? Game.players : playerSelection
     }));
+  }
+}
+
+function WSSUpdateGameElement() {
+  for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
+    if (CLIENTS[prop].type === "gm") {
+      CLIENTS[prop].socket.send(JSON.stringify({
+        type: wsMessageTypes.game,
+        payload: Game
+      }));
+    }
   }
 }
 

@@ -16,6 +16,7 @@ function init() {
         skills: [],
         perks: [],
         players: [],
+        parties: [],
         monsters: [],
         quests: []
     };
@@ -37,7 +38,26 @@ function init() {
         Game.perks.push(Object.assign(new Perk(), elt));
     });
     obj.players.forEach(elt => {
-        Game.players.push(Object.assign(new Player(0, ""), elt));
+
+        const Party = require("./saorpg/Party");
+
+        const player = Object.assign(new Player(0, ""), elt);
+        Game.players.push(player);
+
+        //Read generated entry
+        if (player.party != null) {
+            //Check if party has already been created
+            const party = Game.parties.find(elt => elt.id === player.party);
+
+            if (party) {
+                party.addPlayer(player);
+            } else {
+                //Create Party
+                const p = new Party(player);
+                Game.parties.push(p);
+            }
+        }
+
     });
     obj.monsters.forEach(elt => {
         Game.monsters.push(Object.assign(new Monster(0, ""), elt));

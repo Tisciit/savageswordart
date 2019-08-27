@@ -12,8 +12,8 @@ const App = () => {
 
   return (
     <div className="App">
-      {render === "welcome" ? <Welcome /> : ""/* Could place a Nav bar here :) */}
-      {render === "main" ? <Main /> : ""}
+      {render === "welcome" && <Welcome /> /* Could a place a Nav bar here :) */}
+      {render === "main" && <Main /> }
 
     </div>
   )

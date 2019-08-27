@@ -1,25 +1,39 @@
 class Party {
-    
-    constructor(player1, player2) {
-        this.id = nextId++;
+
+    constructor(members) {
+        this.id = Party.nextId++;
         this.players = [];
-        this.addPlayer(player1);
-        this.addPlayer(player2);
-        this.lead = player1;
+
+        if (Array.isArray(members)) {
+            for (let m of members) {
+                this.addPlayer(m);
+            }
+            this.lead = members[0];
+        } else {
+            this.addPlayer(members);
+            this.lead = members
+        }
+
+        this.setInfo();
     }
 
-    getInfo() {
+    setInfo() {
         const data = [];
 
         for (let player of this.players) {
             data.push({
                 id: player.id,
                 name: player.name,
-                percentage: player.Stats.HP.current / player.Stats.HP.total
+                percentage: (player.Stats.HP.current / player.Stats.HP.total) * 100
             });
         }
 
-        return data;
+        console.log(data);
+
+        for (let player of this.players) {
+            player.partyData = data;
+            console.log(player);
+        }
     }
 
     changeLead(playerNewLead) {
@@ -38,3 +52,5 @@ class Party {
 }
 
 Party.nextId = 0;
+
+module.exports = Party;
