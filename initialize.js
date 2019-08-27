@@ -4,6 +4,7 @@ const Effect = require("./saorpg/Effect");
 const Skill = require("./saorpg/Skill");
 const Perk = require("./saorpg/Perk");
 const Player = require("./saorpg/Player");
+const Party = require("./saorpg/Party");
 const Monster = require("./saorpg/Monster");
 const Quest = require("./saorpg/Quest");
 

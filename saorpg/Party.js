@@ -1,32 +1,39 @@
 class Party {
-    constructor(Player1, Player2) {
+    
+    constructor(player1, player2) {
         this.id = nextId++;
         this.players = [];
-        this.addPlayer(Player1);
-        this.addPlayer(Player2);
+        this.addPlayer(player1);
+        this.addPlayer(player2);
+        this.lead = player1;
     }
 
     getInfo() {
         const data = [];
 
-        for (let p of this.players) {
+        for (let player of this.players) {
             data.push({
-                id: p.id,
-                name: p.name,
-                percentage: p.Stats.HP.current / p.Stats.HP.total
+                id: player.id,
+                name: player.name,
+                percentage: player.Stats.HP.current / player.Stats.HP.total
             });
         }
 
         return data;
     }
 
-    addPlayer(Player) {
-        this.players.push(Player);
-        Player.party = this.id;
+    changeLead(playerNewLead) {
+        this.lead = playerNewLead;
     }
 
-    removePlayer(Player) {
-        this.players = this.players.filter(elt => elt.id !== Player.id);
+    addPlayer(player) {
+        this.players.push(player);
+        player.party = this.id;
+    }
+
+    removePlayer(player) {
+        this.players = this.players.filter(elt => elt.id !== player.id);
+        player.party = null;
     }
 }
 
