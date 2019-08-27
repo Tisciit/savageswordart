@@ -3,8 +3,12 @@ import { useSelector } from "react-redux";
 import Healthbar from "./HealthBar";
 import styled from "styled-components";
 import CreatePlayer from "../Utilities/CreatePlayer";
+import AllPlayers from "../Utilities/AllPlayers";
+import DamagePlayer from "../Utilities/DamagePlayer";
 
 const Main = () => {
+
+    const type = useSelector(state => state.userType.type);
 
     const self = useSelector(state => state.game.self);
     const party = self.party || [];
@@ -17,16 +21,22 @@ const Main = () => {
                     hpcurrent={self.Stats.HP.current}
                     hptotal={self.Stats.HP.total}
                     level={self.Stats.LVL}
-                    showInfo="1" />
+                    showInfo="1" /> : null}
                 {party.map((elt, index) => <Healthbar
-                    key={index}
-                    name={elt.name}
-                    hpcurrent={elt.percentage}
-                    hptotal="100"
-                    showInfo="0" />
-                )}
+                        key={index}
+                        name={elt.name}
+                        hpcurrent={elt.percentage}
+                        hptotal="100"
+                        showInfo="0" />
+                    )}
             </div>
-            <CreatePlayer></CreatePlayer>
+            { type === 1 &&
+            <div>
+                <CreatePlayer></CreatePlayer>
+                <AllPlayers></AllPlayers>
+                <DamagePlayer></DamagePlayer>
+            </div>
+            }
         </Screen>
     )
 }

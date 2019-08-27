@@ -1,17 +1,13 @@
 import store from "./state/store";
 import {
-    updatePlayer,
     updatePlayers,
     updateSelf
 } from "./state/actions/game";
-import {
-    changerender
-} from "./state/actions/render";
 
 //WebSocket needs to be moved somewhere else :(
 const webSocket = new WebSocket(`${window.location.href.replace("http", "ws").replace(":3000", ":5000")}`);
 
-let uid = "";
+export let uid = "";
 
 export const connect = () => {
     webSocket.addEventListener("message", (message) => {
@@ -22,11 +18,6 @@ export const connect = () => {
             case "connection": {
                 console.log(data.payload);
                 uid = data.payload;
-                break;
-            }
-
-            case "game": {
-                store.dispatch(updatePlayers(data.payload.players));
                 break;
             }
 
@@ -41,8 +32,9 @@ export const connect = () => {
             }
 
             //GM  "exclusive - populate players with way more info"
-            case "gm": {
+            case "players": {
                 store.dispatch(updatePlayers(data.payload));
+                break;
             }
 
             default: {
@@ -51,14 +43,6 @@ export const connect = () => {
 
         }
     });
-}
-
-export const impersonatePlayer = (id) => {
-    webSocket.send(JSON.stringify({
-        uid,
-        action: "player",
-        id: id
-    }));
 }
 
 export const impersonatePlayerAsync = (id) => {
@@ -89,15 +73,37 @@ export const impersonatePlayerAsync = (id) => {
             reject("timeout");
         }, 2000);
 
-        
+
     })
 };
 
-export const impersonateGM = () => {
-    webSocket.send(JSON.stringify({
-        uid,
-        action: "gm",
-    }))
+export const impersonateGMAsync = () => {
+    return new Promise((resolve, reject) => {
+        webSocket.send(JSON.stringify({
+            uid,
+            action: "gm",
+        }));
+
+        //Self deleting event listener
+        const listener = (message) => {
+            const data = JSON.parse(message.data);
+            if (data.type === "gm") {
+                store.dispatch(updatePlayers(data.payload));
+                webSocket.removeEventListener("message", listener);
+                clearInterval(timeOut);
+                resolve("gm");
+            }
+        }
+
+        webSocket.addEventListener("message", listener);
+
+        //timeout after 2s
+        const timeOut = setInterval(() => {
+            console.log("reject");
+            webSocket.removeEventListener("message", listener);
+            reject("timeout");
+        }, 2000);
+    });
 }
 
 export default connect;

@@ -46,6 +46,49 @@ app.get("/api/get/:object", (req, res) => {
 
 //#region --- POST Requests ---
 
+app.post("/api/assignGM", (req, res) => {
+  const {
+    uid
+  } = req.body;
+
+  if (!uid) {
+    res.status(500).send(`Can´t find client with id ${uid}`);
+    return;
+  }
+
+  console.log(`${uid} impersonated GM`);
+  Object.assign(CLIENTS[uid], {
+    type: "gm"
+  });
+
+  res.json(Game.players);
+});
+
+app.post("/api/assignSelf", (req, res) => {
+  const {
+    uid,
+    id
+  } = req.body;
+
+  const player = Game.players.find(elt => elt.id === id);
+
+  if (!player || !uid) {
+    res.status(500).send(`Can´t find client with id ${uid} and / or player with id ${id}`);
+    return;
+  }
+
+  console.log(`${id} impersonated to ${player.id}`);
+
+  //Set up wss Subscription
+  Object.assign(CLIENTS[uid], {
+    self: player.id
+  });
+
+  //Return Player to client
+  res.json(player);
+
+});
+
 app.post("/api/createPlayer", (req, res) => {
 
   const level = req.body.level || 1;
@@ -59,7 +102,7 @@ app.post("/api/createPlayer", (req, res) => {
   const player = new Player(level, name);
   Game.players.push(player);
   res.json(player);
-  sendToClients("players");
+  WSSUpdatePlayers();
 });
 
 app.post("/api/save", (req, res) => {
@@ -71,18 +114,22 @@ app.post("/api/save", (req, res) => {
 app.post("/api/hp", (req, res) => {
 
   const {
-    player,
+    id,
     value
   } = req.body;
 
-  const p = Game.players.find(pl => pl.name === player);
-  if (p) {
-    p.manipulateHealth(value);
+  //Parse for integer
+  const playerid = parseInt(id);
+  const theValue = parseInt(value);
+
+  const player = Game.players.find(elt => elt.id === playerid);
+  if (player) {
+    player.manipulateHealth(theValue);
     res.send("Updated Players Health");
+    WSSupdatePlayer(player.id);
   } else {
     res.send("Could not find player :(");
   }
-  sendToClients("players");
 });
 
 app.post("/api/en", (req, res) => {
@@ -108,8 +155,7 @@ const CLIENTS = {};
 const wsMessageTypes = {
   connection: "connection",
   self: "self",
-  gm: "gm",
-  playerSelection: "playerSelection"
+  players: "players"
 }
 
 wss.on("connection", function connection(ws) {
@@ -121,7 +167,8 @@ wss.on("connection", function connection(ws) {
   console.log(`Assigned ID ${id} to new Client`)
   CLIENTS[id] = {
     connected: Date.now(),
-    socket: ws
+    socket: ws,
+    type: "player"
   }
 
   ws.send(JSON.stringify({
@@ -132,47 +179,8 @@ wss.on("connection", function connection(ws) {
 
   //#region --- Handle messages from client
   ws.on("message", function incoming(message) {
-    const request = JSON.parse(message);
-    const id = request.uid;
-
-    //Vars which get sent back to the client
-    let type, payload;
-
-    console.log(request.action);
-
-    switch (request.action) {
-      case "player": {
-        const player = Game.players.find(elt => elt.id === request.id);
-        Object.assign(CLIENTS[id], {
-          type: "player",
-          self: player.id
-        });
-        type = wsMessageTypes.self;
-        payload = player;
-        console.log(`${id} impersonated to ${player.id}`);
-        break;
-      }
-
-      case "gm": {
-        Object.assign(CLIENTS[id], {
-          type: "gm"
-        });
-        type = wsMessageTypes.gm;
-        payload = Game.players;
-        break;
-      }
-
-      default:
-        type = "unknown";
-        payload = null;
-          break;
-    }
-
-    //Send client data
-    ws.send(JSON.stringify({
-      type,
-      payload
-    }));
+    console.log(`Received message ${message}`);
+    console.log(`Messages are not handled`);
   });
   //#endregion
 
@@ -184,7 +192,7 @@ wss.on("connection", function connection(ws) {
   }));
 
   ws.send(JSON.stringify({
-    type: wsMessageTypes.playerSelection,
+    type: wsMessageTypes.players,
     payload: playerSelection
   }));
   //#endregion
@@ -200,7 +208,7 @@ function WSSupdatePlayer(playerID) {
   for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
     const client = CLIENTS[prop];
     if (playerID == client.self || client.type == "gm") {
-      client.ws.send(JSON.stringify({
+      client.socket.send(JSON.stringify({
         type: wsMessageTypes.self,
         payload: player
       }));
@@ -208,27 +216,19 @@ function WSSupdatePlayer(playerID) {
   }
 }
 
-function sendToClients(type) {
+function WSSUpdatePlayers() {
+  const playerSelection = [];
+  Game.players.forEach(elt => playerSelection.push({
+    id: elt.id,
+    name: elt.name
+  }));
 
-  let data = {};
-  type = type.toLowerCase();
-
-  if (type === "game") {
-    data = Game;
-  } else {
-    data = Game[type];
-
-    if (data === undefined) {
-      console.log(`Can not send ${type}`);
-      return;
-    }
+  for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
+    CLIENTS[prop].socket.send(JSON.stringify({
+      type: wsMessageTypes.players,
+      payload: CLIENTS[prop].type == "gm" ? Game.players : playerSelection
+    }));
   }
-  wss.clients.forEach(l => {
-    l.send(JSON.stringify({
-      dataType: type,
-      data: data
-    }))
-  });
 }
 
 //#endregion

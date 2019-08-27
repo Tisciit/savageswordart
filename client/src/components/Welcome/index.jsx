@@ -1,10 +1,11 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { userTypes, setUserPlayer, setUserGM, setUserUndefined, setUserIS } from "../../state/actions/userType";
+import { userTypes, setUserPlayer, setUserUndefined, setUserGM } from "../../state/actions/userType";
 import styled from "styled-components";
 
-import { impersonatePlayerAsync, impersonateGM } from "../../webSocket";
+import { uid } from "../../webSocket";
 import { changerender } from "../../state/actions/render";
+import { updateSelf, updatePlayers } from "../../state/actions/game";
 
 const Selection = (props) => {
     const options = useSelector((state) => state.game.players);
@@ -13,11 +14,22 @@ const Selection = (props) => {
         <Screen>
             <h1>Who are you?</h1>
             {options.map((elt, id) => <button key={id} onClick={() => {
-                impersonatePlayerAsync(elt.id).then(
-                    resolve => dispatch(changerender("main"))
-                );
-            }}>{elt.name}</button>)
-            }
+                fetch("/api/assignSelf", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        uid,
+                        id: elt.id
+                    })
+                })
+                    .then(data => data.json())
+                    .then(player => {
+                        dispatch(updateSelf(player));
+                        dispatch(changerender("main"));
+                    });
+            }}>{elt.name}</button>)}
             {props.children}
         </Screen >
     );
@@ -35,7 +47,18 @@ const Welcome = (props) => {
                     <h1>Welcome to SaveageSwordArt!</h1>
                     <div className="horiz">
                         <button onClick={() => {
-                            impersonateGM()
+                            dispatch(setUserGM());
+                            fetch("/api/assignGM", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ uid })
+                            }).then(data => data.json()).then(players => {
+                                dispatch(updateSelf(players[0]));
+                                dispatch(updatePlayers(players));
+                                dispatch(changerender("main"));
+                            });
                         }}>I am the GM</button>
                         <button onClick={() => {
                             dispatch(setUserPlayer())
