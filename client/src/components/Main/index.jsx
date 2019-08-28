@@ -23,13 +23,17 @@ const Main = () => {
                     hptotal={self.Stats.HP.total}
                     level={self.Stats.LVL}
                     showInfo="1" />
-                {party.map(elt => <Healthbar
-                        key={elt.id}
-                        name={elt.name}
-                        hpcurrent={elt.percentage}
-                        hptotal="100"
-                        showInfo="0" />
-                    )}
+                {party.map(elt => {
+
+                    return elt.id !== self.id &&
+                        <Healthbar
+                            key={elt.id}
+                            name={elt.name}
+                            hpcurrent={elt.percentage}
+                            hptotal="100"
+                            showInfo="0" />
+                }
+                )}
             </div>
             {type === 1 &&
                 <div>
