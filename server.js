@@ -226,12 +226,20 @@ wss.on("connection", function connection(ws) {
 
 
 //Websocket function which sends updates of a specific player to the corresponding clients
-function WSSupdatePlayer(playerID) {
-  // Get all connections for player object
+function WSSupdatePlayer(playerID, cancelPartyUpdate = false) {
 
-  const player = Game.players.find(elt => elt.id === playerID);
+   // Get all connections for player object
+   const player = Game.players.find(elt => elt.id === playerID);
 
-  console.log(player);
+  if (player.party != null && !cancelPartyUpdate) {
+    console.log("Player is member in a party");
+    const party = Game.parties.find(elt => elt.id === player.party);
+    party.setInfo();
+
+    for (const member of party.players) {
+      WSSupdatePlayer(member.id, true);
+    }
+  }
 
   for (let prop of Object.getOwnPropertyNames(CLIENTS)) {
     const client = CLIENTS[prop];
