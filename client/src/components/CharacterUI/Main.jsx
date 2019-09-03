@@ -5,6 +5,8 @@ import Man from "../../graphics/SAO_Man.svg"
 import Circle from "../../graphics/RingedCircle.svg";
 import CircleOn from "../../graphics/RingedCircle_on.svg";
 
+import CharacterStats from "./CharacterStats";
+
 //#region Styled Components
 //To control size of its child elements
 const WindowContainer = styled.div`
@@ -58,7 +60,6 @@ const Name = styled.div`
     width: 90%;
     padding: .3em;
     text-align: center;
-    border-top: 2px solid gray;
     `;
 
 const Info = styled.div`
@@ -143,11 +144,14 @@ const RadioCircle = (props) => {
     );
 }
 
-const Main = (props) => {
+export const Main = (props) => {
+
+    const {name} = props.player;
+
     return (
         <WindowContainer>
             <Window>
-                <Name>Tisciit</Name>
+                <Name>{name}</Name>
                 <Center>
                     <img style={{ height: 60 + "%" }} src={Man} alt="ManWoman"></img>
                     <RadioCircle
@@ -156,22 +160,7 @@ const Main = (props) => {
                         rotations={[120, 150, 180, 210, 240, 270]}
                         onChange={(e) => { console.log(e) }} />
                 </Center>
-                <InfoBox></InfoBox>
-
             </Window>
         </WindowContainer>
     )
 }
-
-const InfoBox = (props) => {
-    const { header, body } = props;
-
-    return (
-        <Info>
-            <h4>{header}</h4>
-            <p>{body}</p>
-        </Info>
-    );
-}
-
-export default Main;

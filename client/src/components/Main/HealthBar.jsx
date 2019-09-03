@@ -1,202 +1,106 @@
 import React from "react";
 import styled from "styled-components";
 
-
-//#region Styled components
-
-const font_base = 1.4;
-
-const col_font = "black";
-const col_damage = "#b12e41"
-const col_heal = "#4d94ff"
-const col_bg = "#ddd6d6";
-
-const red = "linear-gradient(120deg, rgba(122,4,23,1) 0%, rgba(226,12,45,1) 100%)"
-const yellow = "linear-gradient(120deg, rgba(223,156,91,1) 0%, rgba(239,232,20,1) 100%)"
-const green = "linear-gradient(120deg, rgba(80,194,108,1) 0%, rgba(60,240,105,1) 100%)"
-
-
-const Wrapper = styled.div`
-    position: relative;
-    display: grid;
-    width: 25rem;
-    max-width: 100%;
-    padding: .2em;
-    background: linear-gradient(180deg, rgba(221,214,214,1) 0%, rgba(221,214,214,1) 65%, rgba(221,214,214,0) 65%);
-
-    transform-origin: left bottom;
-    transform: skewX(-20deg);
-
-    ::before{
-        content: " ";
-        position: absolute;
-        left: 0;
-        top: 0;
-        height: 60%;
-        width: 20%;
-        background: ${col_bg};
-
-        transform-origin: left bottom;
-        transform: skewX(20deg);
-    }
-
-    `;
-
-const Grid = styled.div`
-    transform: skewX(20deg);
-    font-size: 1rem;
-    color: ${col_font};
-    position: relative;
-    display: grid;
-    grid-template-columns: 1fr 2fr 4fr 1fr 3fr .5fr;
-    grid-template-rows: auto;
-    grid-template-areas: 
-        "status name hp hp hp ."
-        ". . . . info info";
-    `;
-
-const Name = styled.div`
-    padding-right: ${font_base / 2}rem;
-    font-size: ${font_base}rem;
-    grid-area: name;
-    `;
-
-const Bars = styled.div`
-    grid-area: hp;
-    position: relative;
-    border: 1px solid white;
-    background: black;
-    box-shadow: inset 0 0 1px black;
-    padding: 1px;
-
-    ::before{
-        //Thingy making the bar smaller
-        content: " ";
-        position: absolute;
-        z-index: 3;
-        right: -1px;
-        bottom: -1px;
-        width: 40%;
-        height: 50%;
-        border-top: 1px solid white;
-        border-left: 1px solid white;
-        box-shadow: -1px -1px 0 0 black;
-        transform-origin: right bottom;
-        transform: skewX(-20deg);
-        background: ${col_bg};
-    }
-
-    ::after  {
-        //thingy making the bar pointy
-        content: " ";
-        position: absolute;
-        z-index: 1;
-        left: 95%;
-        right: -7px;
-        border-top: 1px solid white;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
-        top: -1px;
-        height: 50%;
-        transform-origin: right bottom;
-        transform: skewX(-20deg);
-        background: black;
-    }
-    `;
-
-const HPBar = styled.div`
-    position: absolute;
-    z-index: 2;
-    top: 1px;
-    left: 5px;
-    bottom: 1px;
-    transition: width 1s, background-color 1s;
-    transform: skewX(-20deg);
-
-    :before {
-        //Place front thingy here
-        position: absolute;
-        top: 0;
-        left: 0px;
-        content: "";
-        height: 100%;
-        width: 100%;
-        background: inherit;
-        transform-origin: left bottom;
-        transform: skewX(20deg);
-    }
-    `;
-
-const DamageBar = styled(HPBar)`
-    background: ${col_damage};
-    transition: width 2s;
-    `;
-
-const HealBar = styled(HPBar)`
-    background: ${col_heal};
-    transition: width .5s;
-    `;
-
-const InfoContainer = styled.div`
-    z-index: 3;
-    grid-area: info;
-    display: grid;
-    transform: translateY(-20%);
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas:
-        "hpinfo hpinfo lvl";
-    `;
-
-const HPInfo = styled.div`
-    /* TODO: Flex and flex-shrink ? Text wraps when too long */
-    grid-area: hpinfo;
-    text-align: center;
-    border-top-left-radius: .2rem;
-    border-bottom-left-radius: .2rem;
-    background: gray;
-    margin-right: .1em;
-    
-    `;
-
-const LVLInfo = styled.div`
-    grid-area: lvl;
-    text-align:center;
-    border-top-right-radius: .2rem;
-    border-bottom-right-radius: .2rem;
-    background: gray;
-    `
-//#endregion
-
 const Healthbar = (props) => {
 
     const { name, hpcurrent, hptotal, level, showInfo } = props;
 
     const percentage = hpcurrent / hptotal * 100;
-    const barColor = percentage < 30 ? red : percentage < 50 ? yellow : green;
 
-    const withInfo = () => {
-        if (showInfo === "1") {
-            return (
-                <InfoContainer>
-                    <HPInfo>{hpcurrent} / {hptotal}</HPInfo>
-                    <LVLInfo>LV: {level}</LVLInfo>
-                </InfoContainer>
-            )
-        }
-    }
+    console.log(percentage);
+
     return (
-        <Wrapper>
-            <Grid>
-                <Name>{name}</Name>
-                <Bars>
-                    <DamageBar style={{ width: percentage + "%" }} />
-                    <HealBar style={{ width: percentage + "%" }} />
-                    <HPBar style={{ width: percentage + "%", background: barColor }} />
-                </Bars>
-                {withInfo()}
-            </Grid>
-        </Wrapper>
-    )
-}
+        <Graphic
+            version="1.1"
+            baseProfile="full"
+            viewBox="0 0 510 45"
+            xmlns="http://www.w3.org/2000/svg">
 
+            <defs>
+                <path id="mask" d="M 100 8 h 400 l -7 14 h -170 l -5 10 h -218 Z" />
+
+                <rect id="fillBar" x="100" y="8" height="30" width={percentage * 5} />
+
+                <clipPath id="fillLevel">
+                    <use href="#mask" />
+                </clipPath>
+
+                <linearGradient id="background">
+                    <stop offset="30%" stopColor="rgba(134,134,134,100)" />
+                    <stop offset="70%" stopColor="rgba(193,193,193,30)" />
+                </linearGradient>
+
+                <linearGradient id="hpGreen">
+                    <stop offset="5%" stopColor="#21914c" />
+                    <stop offset="95%" stopColor="#3fd968" />
+                </linearGradient>
+
+                <linearGradient id="hpYellow">
+                    <stop offset="5%" stopColor="#d5eb5b" />
+                    <stop offset="95%" stopColor="#d1f024" />
+                </linearGradient>
+
+                <linearGradient id="hpRed">
+                    <stop offset="5%" stopColor="#db233c" />
+                    <stop offset="95%" stopColor="#de6a7a" />
+                </linearGradient>
+
+                <linearGradient id="hpHeal">
+                    <stop offset="30%" stopColor="#4989ed" />
+                    <stop offset="80%" stopColor="#5b6eb0" />
+                </linearGradient>
+
+                <linearGradient id="hpDamage">
+                    <stop offset="30%" stopColor="#810005" />
+                    <stop offset="80%" stopColor="#fb2f2f" />
+                </linearGradient>
+
+            </defs>
+
+            <path d="M 22 0 h 487 l -20 40 h -467 Z" fill="url(#background)" />
+
+            {/* Status Thing */}
+            <path d="M 0 0 h 20 v 40 h -20 v -8 h 8 q 5 0, 5 -5 v -14 q 0 -5, -5 -5 h -8 Z" fill="gray" />
+
+            {/* HP Bars for Damage, Heal, Current */}
+            <g clipPath="url(#fillLevel)">
+                <g transform="skewX(-26.5650511771)">
+                    <rect className="bar_red" x="100" y="8" height="30" width={percentage * 4} fill="url(#hpDamage)" />
+                    <rect className="bar_blu" x="100" y="8" height="30" width={percentage * 4} fill="url(#hpHeal)" />
+                    <rect className="bar_cur" x="100" y="8" height="30" width={percentage * 4} fill={percentage < 20 ? "url(#hpRed)" : percentage < 60 ? "url(#hpYellow)" : "url(#hpGreen)"} />
+                </g>
+            </g>
+
+            {/* Borders for the HP Bar */}
+            <use href="#mask" strokeWidth="4" stroke="black" fill="transparent" clipPath="url(#fillLevel)" />
+            <use href="#mask" strokeWidth="2" stroke="white" fill="transparent" clipPath="url(#fillLevel)" />
+
+            {/* Info Bubbles */}
+            <g>
+                <path d="M 330 30 v 10 q 0 5 5 5 h90 q 5 0 5 -5 v-10 q 0 -5 -5 -5 h-90 q -5 0 -5 5 Z" fill="gray" />
+                <text x="380" y="42" textAnchor="middle">{hpcurrent} / {hptotal}</text>
+            </g>
+
+            <g>
+                <path d="M 435 30 v 10 q 0 5 5 5 h 40 q 5 0 5 -5 v -10 q 0 -5 -5 -5 h -40 q -5 0 -5 5 Z" fill="gray" />
+                <text x="460" y="42" textAnchor="middle">LV: {level}</text>
+            </g>
+
+            <text id="name" x="25" y="28" fontSize="1.2em">{name}</text>
+        </Graphic>
+    );
+
+}
 export default Healthbar;
+
+const Graphic = styled.svg`
+    .bar_red{
+        transition: width 1.5s ease-in-out;
+    }
+    .bar_blu{
+        transition: width .5s ease-in-out;
+    }
+    .bar_cur{
+        transition: width 1s ease-in-out;
+    }
+`

@@ -48,6 +48,7 @@ class Party {
     removePlayer(player) {
         this.players = this.players.filter(elt => elt.id !== player.id);
         player.party = null;
+        this.setInfo();
     }
 }
 

@@ -6,6 +6,7 @@ import CreatePlayer from "../Utilities/CreatePlayer";
 import AllPlayers from "../Utilities/AllPlayers";
 import DamagePlayer from "../Utilities/DamagePlayer";
 import Party from "../Utilities/Party";
+import {Main as DewIt} from "../CharacterUI/Main";
 
 const Main = () => {
 
@@ -16,7 +17,7 @@ const Main = () => {
 
     return (
         <Screen>
-            <div>
+            <div style={{ gridRow: "1/2", gridColumn: "1/2" }}>
                 <Healthbar
                     name={self.name}
                     hpcurrent={self.Stats.HP.current}
@@ -36,13 +37,16 @@ const Main = () => {
                 )}
             </div>
             {type === 1 &&
-                <div>
+                <div style={{ gridRow: "1/2", gridColumn: "2/3" }}>
                     <CreatePlayer></CreatePlayer>
                     <AllPlayers></AllPlayers>
                     <DamagePlayer></DamagePlayer>
                     <Party></Party>
                 </div>
             }
+            <div style={{ gridRow: "2/3", gridColumn: "1/2" }}>
+                <DewIt player={self} />
+            </div>
         </Screen>
     )
 }
@@ -50,7 +54,7 @@ const Main = () => {
 const Screen = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
-
+    grid-template-rows: 1fr 1fr;
 `;
 
 export default Main;
