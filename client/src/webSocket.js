@@ -36,6 +36,7 @@ export const connect = () => {
                 const {players, parties} = data.payload;
                 store.dispatch(updatePlayers(players));
                 store.dispatch(updateParties(parties));
+                break;
             }
 
             default: {

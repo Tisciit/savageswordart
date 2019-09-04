@@ -1,60 +1,58 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import Healthbar from "./HealthBar";
+import { MainHPBar, PartyHPBar } from "./HPBars";
 import styled from "styled-components";
-import CreatePlayer from "../Utilities/CreatePlayer";
-import AllPlayers from "../Utilities/AllPlayers";
-import DamagePlayer from "../Utilities/DamagePlayer";
-import Party from "../Utilities/Party";
-import {Main as DewIt} from "../CharacterUI/Main";
+import { AllPlayers, CreatePlayer, DamagePlayer, Party } from "../Utilities";
 
 const Main = () => {
+  const type = useSelector(state => state.userType.type);
 
-    const type = useSelector(state => state.userType.type);
+  const self = useSelector(state => state.game.self);
+  const party = self.partyData || [];
 
-    const self = useSelector(state => state.game.self);
-    const party = self.partyData || [];
-
-    return (
-        <Screen>
-            <div style={{ gridRow: "1/2", gridColumn: "1/2" }}>
-                <Healthbar
-                    name={self.name}
-                    hpcurrent={self.Stats.HP.current}
-                    hptotal={self.Stats.HP.total}
-                    level={self.Stats.LVL}
-                    showInfo="1" />
-                {party.map(elt => {
-
-                    return elt.id !== self.id &&
-                        <Healthbar
-                            key={elt.id}
-                            name={elt.name}
-                            hpcurrent={elt.percentage}
-                            hptotal="100"
-                            showInfo="0" />
-                }
-                )}
-            </div>
-            {type === 1 &&
-                <div style={{ gridRow: "1/2", gridColumn: "2/3" }}>
-                    <CreatePlayer></CreatePlayer>
-                    <AllPlayers></AllPlayers>
-                    <DamagePlayer></DamagePlayer>
-                    <Party></Party>
-                </div>
-            }
-            <div style={{ gridRow: "2/3", gridColumn: "1/2" }}>
-                <DewIt player={self} />
-            </div>
-        </Screen>
-    )
-}
+  return (
+    <Screen>
+      <div style={{ gridRow: "1/2", gridColumn: "1/2" }}>
+        <MainHPBar
+          height={"4rem"}
+          name={self.name}
+          hpcurrent={self.Stats.HP.current}
+          hptotal={self.Stats.HP.total}
+          level={self.Stats.LVL}
+          showInfo="1"
+        />
+        {party.map(elt => {
+          return (
+            elt.id !== self.id && (
+              <PartyHPBar
+                height={"4rem"}
+                key={elt.id}
+                name={elt.name}
+                percentage={elt.percentage}
+              />
+            )
+          );
+        })}
+      </div>
+      {type === 1 && (
+        <div style={{ gridRow: "1/2", gridColumn: "2/3" }}>
+          <CreatePlayer></CreatePlayer>
+          <AllPlayers></AllPlayers>
+          <DamagePlayer></DamagePlayer>
+          <Party></Party>
+        </div>
+      )}
+      <div style={{ gridRow: "2/3", gridColumn: "1/2" }}>
+        Inventory here pls!
+      </div>
+    </Screen>
+  );
+};
 
 const Screen = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 `;
 
 export default Main;
