@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import Container from "./Container";
 
@@ -30,16 +30,16 @@ const Party = () => {
             <p>TRENNER</p>
             <span>New Party</span>
             <select multiple>
-                {players.map(elt => {
-                    return <option id="partyPlayerSelect" value={elt.id}>{elt.name}</option>
+                {players.map((elt, index) => {
+                    return <option key={index} id="partyPlayerSelect" value={elt.id}>{elt.name}</option>
                 })}
             </select>
             <button onClick={() => {
                 const selected = getSelectedOptions(document.getElementsByTagName("select")[1]);
                 const members = [];
                 for (let id of selected) {
-                    const _id = parseInt(id);
-                    members.push(players.find(elt => elt.id === _id));
+                    const id_ = parseInt(id, 10);
+                    members.push(players.find(elt => elt.id === id_));
                 }
                 fetch("/api/createParty", {
                     method: "POST",

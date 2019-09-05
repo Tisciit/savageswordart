@@ -1,3 +1,4 @@
-import { Menu } from "./Menu";
+import { MenuContainer, MenuItem, Result as MenuResult } from "./Menu";
 
-export { Menu };
+
+export { MenuContainer, MenuItem, MenuResult };

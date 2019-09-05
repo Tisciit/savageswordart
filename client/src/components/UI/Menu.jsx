@@ -1,47 +1,91 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 
-export const Menu = props => {
-  const { options } = props;
+export const MenuContainer = props => {
+  const { options, relativeToParent } = props;
 
-  console.log(options);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   return (
-    <UL>
-      {options.map((elt, index) => (
-        <li key={index}>
-          <span
-            onClick={() => {
-              elt.child.classList.toggle("visible");
+    <Wrapper relative={relativeToParent}>
+      <Container>
+        {options.map((elt, index) => (
+          <MenuItem
+            highlight={selectedIndex === index}
+            key={index}
+            icon={elt.icon}
+            text={elt.text}
+            click={() => {
+              setSelectedIndex(selectedIndex === index ? -1 : index);
+              /*
+                Add animation here for scrolling if needed
+               */
             }}
           >
-            {elt.text}
-          </span>
-          {elt.child}
-        </li>
-      ))}
-    </UL>
+            {selectedIndex === index && elt.child}
+          </MenuItem>
+        ))}
+      </Container>
+    </Wrapper>
   );
 };
 
-const UL = styled.ul`
-  position: absolute;
+export const MenuItem = props => {
+  const { icon, text, click, highlight } = props;
+
+  return (
+    <Item highlight={highlight}>
+      <span onClick={click}>
+        <img src={icon} /> {text}
+      </span>
+      {props.children}
+    </Item>
+  );
+};
+
+const Wrapper = styled.div`
+  position: ${props => (props.relative ? "absolute" : "relative")};
+  top: 0;
+  left: ${props => (props.relative ? "110%" : "0")};
+  width: 100px;
+`;
+
+const Container = styled.ul`
   list-style-type: none;
-  background: whitesmoke;
+  background: gray;
   padding: 0;
   margin: 0;
-  width: 100px;
+  width: 100%;
+  max-height: 9em;
+  overflow-x: hidden;
+  overflow-y: auto;
+`;
 
-  li {
-    padding: 0 0.3rem;
-    height: 3rem;
-    display: grid;
-    align-content: center;
+const Item = styled.li`
+  background: ${props => (props.highlight ? "yellow" : "")};
+  padding: 0 0.3em;
+  height: 3em;
+  display: grid;
+  align-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  & span {
+    display: inline-flex;
     align-items: center;
-    cursor: pointer;
+    align-content: space-between;
   }
 
-  li:nth-child(2) {
-    background: gray;
+  & span img {
+    height: 2em;
   }
 `;
+
+//The last option in this should be this 
+export const Result = styled.div`
+  position: absolute;
+  top: 0;
+  left: 110%;
+  width: auto;
+  height: auto;
+`

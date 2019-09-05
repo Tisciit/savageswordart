@@ -1,26 +1,15 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { MainHPBar, PartyHPBar } from "./HPBars";
+import { MainHPBar, PartyHPBar } from "../UI/HPBars";
 import styled from "styled-components";
 import { AllPlayers, CreatePlayer, DamagePlayer, Party } from "../Utilities";
-import { Menu } from "../UI";
+import { MainMenu } from "../Interface/MainMenu";
 
 const Main = () => {
   const type = useSelector(state => state.userType.type);
 
   const self = useSelector(state => state.game.self);
   const party = self.partyData || [];
-
-  const options = [
-    {
-      text: "This",
-      child: <Menu relative={true} hidden={true} options={[{text: "ho"},{text: "hi"}]} />
-    },
-    {
-      text: "is",
-      child: <Menu className="relative hidden" options={[{text: "swoo"},{text: "swaa"}]} />
-    }
-  ];
 
   return (
     <Screen>
@@ -54,8 +43,8 @@ const Main = () => {
           <Party></Party>
         </div>
       )}
-      <div style={{ gridRow: "2/3", gridColumn: "1/2" }}>
-        <Menu options={options} />
+      <div style={{ gridRow: "2/3", gridColumn: "1/2", fontSize: "1.3rem" }}>
+        <MainMenu />
       </div>
     </Screen>
   );
