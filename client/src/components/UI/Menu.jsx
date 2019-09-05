@@ -9,22 +9,24 @@ export const MenuContainer = props => {
   return (
     <Wrapper relative={relativeToParent}>
       <Container>
-        {options.map((elt, index) => (
-          <MenuItem
-            highlight={selectedIndex === index}
-            key={index}
-            icon={elt.icon}
-            text={elt.text}
-            click={() => {
-              setSelectedIndex(selectedIndex === index ? -1 : index);
-              /*
+        {options.map((elt, index) => {
+          const active = selectedIndex === index;
+          return (
+            <MenuItem
+              key={index}
+              icon={active ? elt.iconActive : elt.icon}
+              text={elt.text}
+              click={() => {
+                setSelectedIndex(active ? -1 : index);
+                /*
                 Add animation here for scrolling if needed
                */
-            }}
-          >
-            {selectedIndex === index && elt.child}
-          </MenuItem>
-        ))}
+              }}
+            >
+              {active && elt.child}
+            </MenuItem>
+          );
+        })}
       </Container>
     </Wrapper>
   );
@@ -62,7 +64,6 @@ const Container = styled.ul`
 `;
 
 const Item = styled.li`
-  background: ${props => (props.highlight ? "yellow" : "")};
   padding: 0 0.3em;
   height: 3em;
   display: grid;
@@ -81,11 +82,11 @@ const Item = styled.li`
   }
 `;
 
-//The last option in this should be this 
+//The last option in this should be this
 export const Result = styled.div`
   position: absolute;
   top: 0;
   left: 110%;
   width: auto;
   height: auto;
-`
+`;
