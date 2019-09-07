@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 export const MenuContainer = props => {
-  const { options, relativeToParent } = props;
+  const { options, relativeToParent, transparent } = props;
 
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   return (
     <Wrapper relative={relativeToParent}>
-      <Container>
+      <Container transparent={transparent}>
         {options.map((elt, index) => {
           const active = selectedIndex === index;
           return (
@@ -48,13 +48,13 @@ export const MenuItem = props => {
 const Wrapper = styled.div`
   position: ${props => (props.relative ? "absolute" : "relative")};
   top: 0;
-  left: ${props => (props.relative ? "110%" : "0")};
-  width: 100px;
+  left: ${props => (props.relative ? "115%" : "0")};
+  display: inline-block;
 `;
 
 const Container = styled.ul`
   list-style-type: none;
-  background: gray;
+  background: ${props => (props.transparent ? "transparent" : "gray")};
   padding: 0;
   margin: 0;
   width: 100%;
@@ -64,7 +64,7 @@ const Container = styled.ul`
 `;
 
 const Item = styled.li`
-  padding: 0 0.3em;
+  padding: 0 .3em;
   height: 3em;
   display: grid;
   align-content: center;
@@ -85,8 +85,7 @@ const Item = styled.li`
 //The last option in this should be this
 export const Result = styled.div`
   position: absolute;
+  display: inline-block;
   top: 0;
   left: 110%;
-  width: auto;
-  height: auto;
 `;

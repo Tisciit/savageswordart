@@ -22,10 +22,6 @@ import icoEquipment_On from "../../graphics/Menu-2/Equipment_on.svg"
 //#endregion
 
 const menustructure = [
-  {text: "lorem"},
-  {text: "lorem"},
-  {text: "lorem"},
-  {text: "lorem"},
   {
     icon: icoMan,
     iconActive: icoMan_On,
@@ -70,4 +66,4 @@ const menustructure = [
   }
 ];
 
-export const MainMenu = () => <MenuContainer shown options={menustructure} />;
+export const MainMenu = () => <MenuContainer transparent shown options={menustructure} />;
