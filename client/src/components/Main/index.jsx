@@ -14,14 +14,7 @@ const Main = () => {
   return (
     <Screen>
       <div style={{ gridRow: "1/2", gridColumn: "1/2" }}>
-        <MainHPBar
-          height={"4rem"}
-          name={self.name}
-          hpcurrent={self.Stats.HP.current}
-          hptotal={self.Stats.HP.total}
-          level={self.Stats.LVL}
-          showInfo="1"
-        />
+        <MainHPBar height={"4rem"} player={self} showInfo="1" />
         {party.map(elt => {
           return (
             elt.id !== self.id && (

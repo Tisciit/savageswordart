@@ -5,8 +5,6 @@ import Man from "../../graphics/SAO_Man.svg"
 import Circle from "../../graphics/RingedCircle.svg";
 import CircleOn from "../../graphics/RingedCircle_on.svg";
 
-import CharacterStats from "./CharacterStats";
-
 //#region Styled Components
 //To control size of its child elements
 const WindowContainer = styled.div`

@@ -63,6 +63,9 @@ const Welcome = (props) => {
                         <button onClick={() => {
                             dispatch(setUserPlayer())
                         }}>I am a Player</button>
+                        <button onClick={() => {
+                            dispatch(changerender("setup"));
+                        }}>Setup Game</button>
                     </div>
                 </Screen> : ""}
             {USER_TYPE.type === userTypes.Player ?

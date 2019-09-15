@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 
 import Welcome from "./Welcome";
 import Main from "./Main";
+import { CreatePlayer } from "./Utilities";
 
 const App = () => {
 
@@ -14,6 +15,7 @@ const App = () => {
     <div className="App">
       {render === "welcome" && <Welcome /> /* Could a place a Nav bar here :) */}
       {render === "main" && <Main /> }
+      {render === "setup" && <CreatePlayer/>}
 
     </div>
   )

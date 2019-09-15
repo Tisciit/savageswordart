@@ -56,11 +56,16 @@ const Graphic = styled.svg`
 `;
 
 export const MainHPBar = props => {
-  const { name, hpcurrent, hptotal, level, showInfo, height } = props;
+  
+  const { name, showInfo, height } = props.player;
+  const { current, total } = props.player.Stats.HP;
+  const level  = props.player.Stats.LVL;
+
+  //Put to more speaking variables
+  const hpcurrent = current;
+  const hptotal = total;
 
   const percentage = (hpcurrent / hptotal) * 100;
-
-  console.log(props);
 
   return (
     <Graphic
@@ -121,8 +126,8 @@ export const MainHPBar = props => {
               percentage < 20
                 ? "url(#hpRed)"
                 : percentage < 60
-                ? "url(#hpYellow)"
-                : "url(#hpGreen)"
+                  ? "url(#hpYellow)"
+                  : "url(#hpGreen)"
             }
           />
         </g>
@@ -231,8 +236,8 @@ export const PartyHPBar = props => {
               percentage < 20
                 ? "url(#hpRed)"
                 : percentage < 60
-                ? "url(#hpYellow)"
-                : "url(#hpGreen)"
+                  ? "url(#hpYellow)"
+                  : "url(#hpGreen)"
             }
           />
         </g>
